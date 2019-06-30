@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>逆向笔记 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#汇编指令记录"><span class="toc-text">汇编指令记录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CMOV系列指令"><span class="toc-text">CMOV系列指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SET指令相关"><span class="toc-text">SET指令相关</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#条件指令"><span class="toc-text">条件指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#调试器相关"><span class="toc-text">调试器相关</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正向逆向结合"><span class="toc-text">正向逆向结合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IDA学习"><span class="toc-text">IDA学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栈"><span class="toc-text">栈</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">逆向笔记</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">January 7, 2019&nbsp;&nbsp;19:23:43</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="汇编指令记录"><a href="#汇编指令记录" class="headerlink" title="汇编指令记录"></a>汇编指令记录</h3><hr>
+<p>加减乘除影响FLAG标志位。如果结果为0则ZF 位置为1 ,je 和 jz 意思是一样的都是 zF位为1则跳转。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">;0039FA88  18 23 44 58 CB 21 B0 D9 A4 FA 39 00 18 23 44 58  #DX?百9.#DX</span><br><span class="line">mov  eax [esi+0x3010];</span><br><span class="line">esi+0x3010=0x39FA88 </span><br><span class="line">则eax = 58 44 23 18 #小端模式</span><br><span class="line">sub eax,0xB2A97556;0xAD1C9585</span><br></pre></td></tr></table></figure></p>
+<h4 id="CMOV系列指令"><a href="#CMOV系列指令" class="headerlink" title="CMOV系列指令"></a>CMOV系列指令</h4><p>作用：当传送条件满足时，指令把源值S复制到目的R。有些指令是“同义名”，即同一条机器指令的不同名字。</p>
+<p><table></table></p>
+<p><thead></thead></p>
+<p><tr></tr></p>
+<p><th>指令</th></p>
+<p><th>英文原义</th></p>
+<p><th>跳转条件</th></p>
+<p><th>描述</th><br><br></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><td>cmove/cmovz S, R</td></p>
+<p><td>move if equal/zero</td></p>
+<p><td>ZF</td></p>
+<p><td>相等/零</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovne/cmovnz S, R</td></p>
+<p><td>move if not equal/zero</td></p>
+<p><td>~ZF</td></p>
+<p><td>不等/非零</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovs S, R</td></p>
+<p><td>move if sign</td></p>
+<p><td>SF</td></p>
+<p><td>负数</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovns S, R</td></p>
+<p><td>move if not sign</td></p>
+<p><td>~SF</td></p>
+<p><td>非负数</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovg/cmovnle S, R</td></p>
+<p><td>move if greater than</td></p>
+<p><td>~(SF ^ OF) &amp; ~ZF</td></p>
+<p><td>大于（有符号&gt;）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovge/cmovnl S, R</td></p>
+<p><td>move if greater than or equal</td></p>
+<p><td>~(SF ^ OF)</td></p>
+<p><td>大于等于（有符号&gt;=）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovl/cmovnge S, R</td></p>
+<p><td>move if less</td></p>
+<p><td>SF ^ OF</td></p>
+<p><td>小于（有符号&lt;）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovle/cmovng S, R</td></p>
+<p><td>move if less than or equal</td></p>
+<p><td>(SF ^ OF) | ZF</td></p>
+<p><td>小于等于（有符号&lt;=）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmova/cmovnbe S, R</td></p>
+<p><td>move if above</td></p>
+<p><td>~CF &amp; ~ZF</td></p>
+<p><td>超过（无符号&gt;）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovae/cmovnb S, R</td></p>
+<p><td>move if above or equal</td></p>
+<p><td>~CF</td></p>
+<p><td>超过或相等（无符号&gt;=）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovb/cmovnae S, R</td></p>
+<p><td>move if below</td></p>
+<p><td>CF</td></p>
+<p><td>低于（无符号&lt;）</td><br></p>
+<p><tr></tr></p>
+<p><td>cmovbe/cmovna S, R</td></p>
+<p><td>move if below or equal</td></p>
+<p><td>CF | ZF</td></p>
+<p><td>低于或相等（无符号&lt;=）</td><br><br><br></p>
+<h4 id="SET指令相关"><a href="#SET指令相关" class="headerlink" title="SET指令相关"></a>SET指令相关</h4><p>作用：每条指令根据条件码的某种组合，将一个字节设置为0或1。有些指令是“同义名”，即同一条机器指令的不同名字。</p>
+<p><table></table></p>
+<p><thead></thead></p>
+<p><tr></tr></p>
+<p><th>指令</th></p>
+<p><th>英文原义</th></p>
+<p><th>效果</th></p>
+<p><th>设置条件</th></p>
+<p><th>解释</th><br><br></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><td>sete/setz D</td></p>
+<p><td>set when equal/zero</td></p>
+<p><td>D = ZF</td></p>
+<p><td>相等/零</td></p>
+<p><td>零比较好理解。相等是因为，如果前一个指令是CMP且两个数相等，则结果为0，ZF置位。</td><br></p>
+<p><tr></tr></p>
+<p><td>setne/setnz D</td></p>
+<p><td>set when not equal/zero</td></p>
+<p><td>D = ~ZF</td></p>
+<p><td>不等/非零</td></p>
+<p><td>与sete/setz的思路相同。</td><br></p>
+<p><tr></tr></p>
+<p><td>sets D</td></p>
+<p><td>set when sign</td></p>
+<p><td>D = SF</td></p>
+<p><td>负数</td></p>
+<p><td>当运算结果为负时成立。</td><br></p>
+<p><tr></tr></p>
+<p><td>setns D</td></p>
+<p><td>set when not sign</td></p>
+<p><td>D = ~SF</td></p>
+<p><td>非负数</td></p>
+<p><td>当运算结果非负时成立。</td><br></p>
+<p><tr></tr></p>
+<p><td>setg/setnle D</td></p>
+<p><td>set when greater than / set when not less than or equal</td></p>
+<p><td>D = ~(SF ^ OF) &amp; ~ZF</td></p>
+<p><td>大于（有符号&gt;）</td></p>
+<p><td>如果前一指令为CMP且两（符号）数关系为大于，则减法结果仅有两种可能性：（1）不溢出，结果为正数，SF=0，OF=0；（2）溢出，结果为负数，SF=1，OF=1，即SF与OF相等。若两数相等，则SF=OF=0，仍需加上条件&amp; ~ZF。</td><br></p>
+<p><tr></tr></p>
+<p><td>setge/setnl D</td></p>
+<p><td>set when greater than or equal / set when not less than</td></p>
+<p><td>D = ~(SF ^ OF)</td></p>
+<p><td>大于等于（有符号&gt;=）</td></p>
+<p><td>从setg的条件中去掉结果不为0的要求就行。</td><br></p>
+<p><tr></tr></p>
+<p><td>setl/setnge D</td></p>
+<p><td>set when less / set when not greater than or equal</td></p>
+<p><td>D = SF ^ OF</td></p>
+<p><td>小于（有符号&lt;）</td></p>
+<p><td>如果前一指令为CMP且两（符号）数关系为小于，则减法结果仅有两种可能性：（1）不溢出，结果为负数，SF=1，OF=0；（2）溢出，结果为正数，SF=0，OF=1，即SF与OF不等，且两数不等。不用特意加上两数相等的判断，因为此时SF=OF。</td><br></p>
+<p><tr></tr></p>
+<p><td>setle/setng D</td></p>
+<p><td>set when less than or equal / set when not greater than</td></p>
+<p><td>D = (SF ^ OF) | ZF</td></p>
+<p><td>小于等于（有符号&lt;=）</td></p>
+<p><td>在setl的条件中加上两数相等的可能性，即| ZF。</td><br></p>
+<p><tr></tr></p>
+<p><td>seta/setnbe D</td></p>
+<p><td>set when above / set when not below or equal</td></p>
+<p><td>D = ~CF &amp; ~ZF</td></p>
+<p><td>超过（无符号&gt;）</td></p>
+<p><td>如果前一指令为CMP且两（无符号）数关系为大于，则必然有无符号减法结果不溢出（~CF）和减法结果不为0（~ZF）。</td><br></p>
+<p><tr></tr></p>
+<p><td>setae/setnb D</td></p>
+<p><td>set when above or equal / set when not below</td></p>
+<p><td>D = ~CF</td></p>
+<p><td>超过或相等（无符号&gt;=）</td></p>
+<p><td>从seta的条件中去掉对结果不为0的约束即可。</td><br></p>
+<p><tr></tr></p>
+<p><td>setb/setnae D</td></p>
+<p><td>set when below / set when not above or equal</td></p>
+<p><td>D = CF</td></p>
+<p><td>低于（无符号&lt;）</td></p>
+<p><td>如果前一指令为CMP且两（无符号）数关系为小于，则必然有无符号减法结果溢出。</td><br></p>
+<p><tr></tr></p>
+<p><td>setbe/setna D</td></p>
+<p><td>set when below or equal / set when not above</td></p>
+<p><td>D = CF | ZF</td></p>
+<p><td>低于或相等（无符号&lt;=）</td></p>
+<p><td>在setb的条件中加上两数相等的可能性，即| ZF。</td><br><br><br></p>
+<h4 id="条件指令"><a href="#条件指令" class="headerlink" title="条件指令"></a>条件指令</h4><p>有两类指令只根据运算结果设置条件码而不保存运算结果：CMP和TEST。</p>
+<p><table></table></p>
+<p><thead></thead></p>
+<p><tr></tr></p>
+<p><th>指令</th></p>
+<p><th>影响的条件码</th></p>
+<p><th>具体效果</th><br><br></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><td>TEST</td></p>
+<p><td>OF, SF, ZF, AF, CF, PF</td></p>
+<p><td>SF，ZF和PF根据两个操作数逻辑与的结果来设置。CF和OF清0，AF无定义。</td><br></p>
+<p><tr></tr></p>
+<p><td>CMP</td></p>
+<p><td>OF, SF, ZF, AF, CF, PF</td></p>
+<p><td>根据两个操作数的差结果来设置条件码（请注意，AT&amp;T语法是第二个减第一个，Intel语法是第一个减第二个）。</td><br><br><br></p>
+<h4 id="调试器相关"><a href="#调试器相关" class="headerlink" title="调试器相关"></a>调试器相关</h4><hr>
+<p>对齐OD和IDA反汇编的地址<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>修改的是rebase base address</span><br><span class="line">new_start_address=OD_start_address-(IDA_start_address-IDA_base_address)</span><br></pre></td></tr></table></figure></p>
+<h3 id="正向逆向结合"><a href="#正向逆向结合" class="headerlink" title="正向逆向结合"></a>正向逆向结合</h3><p>!a.empty() ==&gt; a.empty()^1</p>
+<h3 id="IDA学习"><a href="#IDA学习" class="headerlink" title="IDA学习"></a>IDA学习</h3><hr>
+<p>IDA视图显示汇编地址<br><a href="https://www.cnblogs.com/17bdw/p/7097465.html" target="_blank" rel="noopener">https://www.cnblogs.com/17bdw/p/7097465.html</a></p>
+<h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><p>压栈后，ESP是减少的所以ESP+[参数]，或者EBP-{参数}指向的是局部变量。<strong>fastcall,</strong>stdcall参数入栈方式，是从右往左，由子函数平栈。</p>
+<p>参考文献</p>
+<p>链接：<a href="https://www.jianshu.com/p/095a227184cc" target="_blank" rel="noopener">https://www.jianshu.com/p/095a227184cc</a></p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/reverse/"># reverse</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/01/20/Fabric1.4多机部署(精)/">Fabric1.4多机部署</a>
+            
+            
+            <a class="next" rel="next" href="/2018/12/06/安恒十月月赛re复现/">安恒十月月赛re复现</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

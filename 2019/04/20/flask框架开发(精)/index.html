@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>flask开发 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#flask框架开发"><span class="toc-text">flask框架开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01基本路由"><span class="toc-text">0x01基本路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-python类的引用"><span class="toc-text">0x02 python类的引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-请求处理"><span class="toc-text">0x03 请求处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-配置Mongo数据库"><span class="toc-text">0x04 配置Mongo数据库</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">flask开发</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 20, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/框架/">框架</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h2 id="flask框架开发"><a href="#flask框架开发" class="headerlink" title="flask框架开发"></a>flask框架开发</h2><p>flask框架主要可以用来开发网站或者提供restful api接口，是一个支持多线程开发的框架。本质是提供封装好了的WSGI(Web Server GateWay Interface )</p>
+<blockquote>
+<p>了解了HTTP协议和HTML文档，我们其实就明白了一个Web应用的本质就是：<br>浏览器发送一个HTTP请求；<br>服务器收到请求，生成一个HTML文档；<br>服务器把HTML文档作为HTTP响应的Body发送给浏览器；<br>浏览器收到HTTP响应，从HTTP Body取出HTML文档并显示。<br>所以，最简单的Web应用就是先把HTML用文件保存好，用一个现成的HTTP服务器软件，接收用户请求，从文件中读取HTML，返回。Apache、Nginx、Lighttpd等这些常见的静态服务器就是干这件事情的。如果要动态生成HTML，就需要把上述步骤自己来实现。不过，接受HTTP请求、解析HTTP请求、发送HTTP响应都是苦力活，如果我们自己来写这些底层代码，还没开始写动态HTML呢，就得花个把月去读HTTP规范。正确的做法是底层代码由专门的服务器软件实现，我们用Python专注于生成HTML文档。因为我们不希望接触到TCP连接、HTTP原始请求和响应格式，所以，需要一个统一的接口，让我们专心用Python编写Web业务–廖雪峰官方教程</p>
+</blockquote>
+<h3 id="0x01基本路由"><a href="#0x01基本路由" class="headerlink" title="0x01基本路由"></a>0x01基本路由</h3><hr>
+<p>在flask框架的开发下，程序入口由主程序启动<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    socketio.run(app, port=<span class="number">8080</span>, host=<span class="string">"0.0.0.0"</span>,</span><br><span class="line">                 debug=os.environ.get(<span class="string">'DEBUG'</span>, app.config.get(<span class="string">"DEBUG"</span>, <span class="keyword">True</span>)))</span><br></pre></td></tr></table></figure></p>
+<p>其中，在主程序中，我们会注册blueprint在这里设置好了特定的路由蓝图<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">app.register_blueprint(bp_login)</span><br><span class="line">app.register_blueprint(bp_user_api)</span><br><span class="line">app.register_blueprint(bp_user_view)</span><br><span class="line">app.register_blueprint(front_rest_user_v2)</span><br><span class="line">app.register_blueprint(my_cluster_api)</span><br></pre></td></tr></table></figure></p>
+<p>在程序的每一级的目录下，包含<strong>init</strong>.py的文件，文件中定义了具体的路由走向。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> .host_api <span class="keyword">import</span> bp_host_api, front_rest_host_v2</span><br><span class="line"><span class="keyword">from</span> .cluster_api <span class="keyword">import</span> bp_cluster_api, front_rest_v2</span><br><span class="line"><span class="keyword">from</span> .my_api <span class="keyword">import</span> my_cluster_api</span><br></pre></td></tr></table></figure></p>
+<p>目录结构可以如下，通过目录我们可以看到在resource目录下有my_api.py的文件，而在<strong>init</strong>.py文件中，my_cluster_api的引入来自于my_api.py文件，然后在程序的入口处register注册。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">../resource</span><br><span class="line">├── access.py</span><br><span class="line">├── cluster_api_bak.py</span><br><span class="line">├── cluster_api.py</span><br><span class="line">├── cluster_view.py</span><br><span class="line">├── generate_yaml.py</span><br><span class="line">├── host_api.py</span><br><span class="line">├── host_view.py</span><br><span class="line">├── index.py</span><br><span class="line">├── __init__.py</span><br><span class="line">├── login.py</span><br><span class="line">├── login.txt</span><br><span class="line">├── my_api.py</span><br></pre></td></tr></table></figure></p>
+<p>而在my_api中，对于my_cluster_api的声明和使用如下，我们首先使用Blueprint来注册，然后通过.route来指向url的具体入口。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">my_cluster_api = Blueprint(<span class="string">'my_cluster_api'</span>,__name__,url_prefix=<span class="string">'/&#123;&#125;'</span>.format(<span class="string">"api"</span>))</span><br><span class="line"><span class="meta">@my_cluster_api.route('/cluster_op/download',methods=['GET','POST'])</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="0x02-python类的引用"><a href="#0x02-python类的引用" class="headerlink" title="0x02 python类的引用"></a>0x02 python类的引用</h3><hr>
+<p> 在框架中，不免分多模块，多包来存放源代码，也就涉及到类的引用问题。类的应用，可以大致分为两种情况，一是在同一个文件夹下，二是不在同一个文件夹下。</p>
+<ul>
+<li>在同一个文件夹下的引用car和test文件，在同一个文件夹下,其中,car.py中声明类Car()，在test中引用Car()这个类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">├── car.py</span><br><span class="line">├── __init__.py</span><br><span class="line">└── test.py</span><br><span class="line"></span><br><span class="line"><span class="comment">#car.py的内容</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,height,weight)</span>:</span></span><br><span class="line">        self.height = height</span><br><span class="line">        self.weight = height</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(self.height)</span><br><span class="line">        print(<span class="string">"speed is too fast"</span>)</span><br><span class="line"><span class="comment">#test.py的内容</span></span><br><span class="line"><span class="keyword">from</span> car <span class="keyword">import</span> Car</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    a = Car(<span class="number">10</span>,<span class="number">20</span>)</span><br><span class="line">    a.run()</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>当不在同一个文件夹下的时候，又会分为，在父目录下和在不同的子目录里如下,如test2.py和bike1.py的父目录处于同一个级别，而test1.py 的父目录和bike1.py的父目录处于同一级别。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> .</span><br><span class="line">├── bike</span><br><span class="line">│   ├── bike1.py</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   └── __pycache__</span><br><span class="line">│       ├── bike1.cpython<span class="number">-36.</span>pyc</span><br><span class="line">│       └── __init__.cpython<span class="number">-36.</span>pyc</span><br><span class="line">├── car</span><br><span class="line">│   ├── car.py</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── __pycache__</span><br><span class="line">│   │   └── car.cpython<span class="number">-36.</span>pyc</span><br><span class="line">│   ├── test1.py</span><br><span class="line">│   └── test.py</span><br><span class="line">└── test2.py</span><br><span class="line"></span><br><span class="line"><span class="number">4</span> directories, <span class="number">10</span> files</span><br></pre></td></tr></table></figure>
+<p>这样的引用，又分为两种情况，分别为通过test2.py引用bike1.py和test1.py引用bike1.py,通过如下代码，我们可以看到在test2.py中，我们可以直接指定目录引用Man()类，而在test1.py中，我么要先将其文件路径加入sys.path中，然后再引用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">#bike1.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Man</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">speak</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"Hello I'm %s"</span>,self.name)</span><br><span class="line"><span class="comment">#与bike1.py同级的__init__.py</span></span><br><span class="line"><span class="keyword">from</span> .bike1 <span class="keyword">import</span> Man</span><br><span class="line"></span><br><span class="line"><span class="comment">#test2.py</span></span><br><span class="line"><span class="keyword">from</span> bike <span class="keyword">import</span> Man</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    a= Man(<span class="string">"Tom"</span>)</span><br><span class="line">    a.speak()</span><br><span class="line"><span class="comment">#test1.py</span></span><br><span class="line"><span class="keyword">import</span> sys </span><br><span class="line">sys.path.append(<span class="string">"../"</span>)</span><br><span class="line"><span class="keyword">from</span> bike <span class="keyword">import</span> Man</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    a = Man(<span class="string">"Xiaoming"</span>)</span><br><span class="line">    a.speak()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="0x03-请求处理"><a href="#0x03-请求处理" class="headerlink" title="0x03 请求处理"></a>0x03 请求处理</h3><hr>
+<p>浏览器通过POST或者GET发出请求，我们需要解析请求中的参数。我们可以通过request_get来解析参数.<br> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_get</span><span class="params">(request, key, default_value=None)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> key <span class="keyword">in</span> request.args:</span><br><span class="line">        <span class="keyword">return</span> request.args.get(key)</span><br><span class="line">    <span class="keyword">elif</span> key <span class="keyword">in</span> request.form:</span><br><span class="line">        <span class="keyword">return</span> request.form.get(key)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        json_body = request.get_json(force=<span class="keyword">True</span>, silent=<span class="keyword">True</span>)</span><br><span class="line">        <span class="keyword">if</span> key <span class="keyword">in</span> json_body:</span><br><span class="line">            <span class="keyword">return</span> json_body[key]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> default_value</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> default_value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cluster_actions</span><span class="params">()</span>:</span></span><br><span class="line">    action = request_get(r, <span class="string">"action"</span>)   </span><br><span class="line">    tconsensus_plugin = request_get(r, <span class="string">"consensus_plugin"</span>)</span><br><span class="line">    tconsensus_mode = request_get(r, <span class="string">"consensus_mode"</span>)</span><br><span class="line">    thost_id = request_get(r, <span class="string">"host_id"</span>)</span><br></pre></td></tr></table></figure></p>
+<p> 我们要通过JSON传递给浏览器数据时，可以通过make_ok_resp()<br> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> jsonify </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_ok_resp</span><span class="params">(error=<span class="string">""</span>, data=&#123;&#125;, code=CODE_OK)</span>:</span></span><br><span class="line">    response_ok[<span class="string">'code'</span>] = code</span><br><span class="line">    response_ok[<span class="string">"error"</span>] = error</span><br><span class="line">    response_ok[<span class="string">"data"</span>] = data</span><br><span class="line">    <span class="keyword">return</span> jsonify(response_ok), CODE_OK</span><br><span class="line"><span class="comment">#在实际的返回中的应用ctest是字典</span></span><br><span class="line"><span class="keyword">return</span> make_ok_resp(code=CODE_CREATED,data=ctest)</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x04-配置Mongo数据库"><a href="#0x04-配置Mongo数据库" class="headerlink" title="0x04 配置Mongo数据库"></a>0x04 配置Mongo数据库</h3><hr>
+<p>mongo数据库我们可以使用软件mongo也可以使用docker镜像来配置,第三方库我们选择的是mongoengine。mongo数据库是非关系型数据库，其中的内容主要是通过键值对来存储的。当我们使用docker镜像来构建我们的数据库的时候，若密码设置为空，我们可以直接通过connect来连接。</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">connect(<span class="string">'dev'</span>,host=<span class="string">'127.0.0.1'</span>,port=<span class="number">27017</span>)</span><br><span class="line"><span class="comment">#Table表的建立通过python Class来实现</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(Document)</span>:</span></span><br><span class="line">    stu_id = StringField(default=<span class="string">""</span>, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    name = StringField(default=<span class="string">""</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OrgSchema</span><span class="params">(Document)</span>:</span></span><br><span class="line">    stu_id = StringField(default=<span class="string">""</span>, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    name = StringField(default=<span class="string">""</span>)</span><br><span class="line">    org_name = StringField(default=<span class="string">""</span>)</span><br><span class="line">    ports = StringField(default=<span class="string">""</span>)</span><br><span class="line">    n_type = StringField(default=<span class="string">""</span>)</span><br><span class="line"> <span class="comment">#数据表的增删改查</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert</span><span class="params">()</span>:</span></span><br><span class="line">    org1 = OrgSchema()</span><br><span class="line">    org1.stu_id = <span class="string">"12345678"</span></span><br><span class="line">    org1.org_name = <span class="string">"org1"</span></span><br><span class="line">    org1.ports = <span class="string">"7050"</span></span><br><span class="line">    org1.n_type = <span class="string">"solo"</span></span><br><span class="line">    <span class="comment">#print (dir(org1))</span></span><br><span class="line">    <span class="comment">#org1.save()</span></span><br><span class="line">    student1 = Student()</span><br><span class="line">    student1.stu_id=<span class="string">"111122233341"</span></span><br><span class="line">    student1.name = <span class="string">"seana"</span></span><br><span class="line">    student1.save()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete_data</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment">#Student.objects(name="seana").delete()</span></span><br><span class="line">    Student.objects(stu_id=<span class="string">"11112223334"</span>).delete()</span><br><span class="line">    <span class="comment">#11112223334</span></span><br><span class="line">    <span class="comment">#11112223334</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">search_data</span><span class="params">()</span>:</span></span><br><span class="line">    result_all = OrgSchema.objects().all()</span><br><span class="line">    <span class="keyword">print</span> (result_all.count())</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data</span><span class="params">()</span>:</span></span><br><span class="line"><span class="string">""" 更新数据 """</span></span><br><span class="line">    <span class="comment"># 年龄,注意用双下划线</span></span><br><span class="line">    Student.objects(stu_id=<span class="number">101</span>).update_one(set__age=<span class="number">23</span>)</span><br><span class="line">    Student.objects(stu_id=<span class="number">102</span>).update_one(set__age=<span class="number">26</span>)</span><br><span class="line">    <span class="comment"># 新增联系方式</span></span><br><span class="line">    peter_contact = dict(phone=<span class="string">'13238985676'</span>, email=<span class="string">'peter@example.com'</span>)</span><br><span class="line">    john_contact = dict(phone=<span class="string">'18034567890'</span>, email=<span class="string">'john@example.com'</span>)</span><br><span class="line">    <span class="comment"># peter</span></span><br><span class="line">    Student.objects(stu_id=<span class="number">101</span>).update_one(set__contact=peter_contact, upsert=<span class="keyword">True</span>)</span><br><span class="line">    <span class="comment"># john</span></span><br><span class="line">    Student.objects(stu_id=<span class="number">102</span>).update_one(set__contact=john_contact, upsert=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/python/"># python</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/06/30/湖南省第二届大学生网络安全技能赛/">湖南省第二届大学生网络安全技能赛</a>
+            
+            
+            <a class="next" rel="next" href="/2019/04/20/shell脚本(精脚本)/">shell脚本</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

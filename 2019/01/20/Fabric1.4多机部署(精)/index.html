@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Fabric1.4多机部署 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Fabric1-4-多机器部署x"><span class="toc-text">Fabric1.4 多机器部署x</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-准备工作"><span class="toc-text">0x01 准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-配置文件修改"><span class="toc-text">0x02 配置文件修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orderer的配置文件"><span class="toc-text">orderer的配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#peer的配置文件修改"><span class="toc-text">peer的配置文件修改</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#端口的配置"><span class="toc-text">端口的配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-分发文件"><span class="toc-text">0x03 分发文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-启动网络即可"><span class="toc-text">0x04 启动网络即可</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Fabric1.4多机部署</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">January 20, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/区块链/">区块链</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h1 id="Fabric1-4-多机器部署x"><a href="#Fabric1-4-多机器部署x" class="headerlink" title="Fabric1.4 多机器部署x"></a>Fabric1.4 多机器部署x</h1><h2 id="0x01-准备工作"><a href="#0x01-准备工作" class="headerlink" title="0x01 准备工作"></a>0x01 准备工作</h2><hr>
+<p>基本要求：能够单机跑通first-network网络，可以参考官方教程<br>机器部署 4+1，4台peer节点，一台order节点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">orderer.org.example.com 192.168.146.131</span><br><span class="line">peer0.org1.example.com 192.168.146.134</span><br><span class="line">peer1.org1.example.com 192.168.146.135</span><br><span class="line">peer0.org2.example.com 192.168.146.136</span><br><span class="line">peer1.org2.example.com 192.168.146.137</span><br></pre></td></tr></table></figure></p>
+<h2 id="0x02-配置文件修改"><a href="#0x02-配置文件修改" class="headerlink" title="0x02 配置文件修改"></a>0x02 配置文件修改</h2><hr>
+<h3 id="orderer的配置文件"><a href="#orderer的配置文件" class="headerlink" title="orderer的配置文件"></a><strong>orderer的配置文件</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp docker-compose-cli.yaml docker-compose-orderer.yaml</span><br></pre></td></tr></table></figure>
+<p>orderer 服务器上我们只需要保留 order 设置，其他 peer 和 cli 设置都可以删除。orderer 可以不设置 extra_hosts<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># Copyright IBM Corp. All Rights Reserved.</span><br><span class="line">#</span><br><span class="line"># SPDX-License-Identifier: Apache-2.0</span><br><span class="line">#</span><br><span class="line">version: &apos;2&apos;</span><br><span class="line">volumes:</span><br><span class="line">  orderer.example.com:</span><br><span class="line">#  peer0.org1.example.com:</span><br><span class="line">#  peer1.org1.example.com:</span><br><span class="line">#  peer0.org2.example.com:</span><br><span class="line">#  peer1.org2.example.com:</span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  byfn:</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"></span><br><span class="line">  orderer.example.com:</span><br><span class="line">    extends:</span><br><span class="line">      file:   base/docker-compose-base.yaml</span><br><span class="line">      service: orderer.example.com</span><br><span class="line">    container_name: orderer.example.com</span><br><span class="line">    networks:</span><br><span class="line">      - byfn</span><br></pre></td></tr></table></figure></p>
+<h3 id="peer的配置文件修改"><a href="#peer的配置文件修改" class="headerlink" title="peer的配置文件修改"></a>peer的配置文件修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp docker-compose-cli.yaml docker-compose-peer.yaml</span><br></pre></td></tr></table></figure>
+<p>然后修改 docker-compose-peer.yaml，去掉 orderer 的配置，只保留一个 peer 和 cli，因为我们要多机部署，节点与节点之前又是通过主机名通讯，所以需要修改容器中的host文件，也就是 extra_hosts 设置，修改后的peer配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"># Copyright IBM Corp. All Rights Reserved.</span><br><span class="line">#</span><br><span class="line"># SPDX-License-Identifier: Apache-2.0</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">version: &apos;2&apos;</span><br><span class="line"></span><br><span class="line">volumes:</span><br><span class="line">  orderer.example.com:</span><br><span class="line">  peer0.org1.example.com:</span><br><span class="line">  peer1.org1.example.com:</span><br><span class="line">  peer0.org2.example.com:</span><br><span class="line">  peer1.org2.example.com:</span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  byfn:</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  peer0.org1.example.com:</span><br><span class="line">    container_name: peer0.org1.example.com</span><br><span class="line">    extends:</span><br><span class="line">      file:  base/docker-compose-base.yaml</span><br><span class="line">      service: peer0.org1.example.com</span><br><span class="line">    extra_hosts:</span><br><span class="line">      - &quot;order.example.com:192.168.146.131&quot;</span><br><span class="line">    networks:</span><br><span class="line">      - byfn</span><br><span class="line"></span><br><span class="line">  cli:</span><br><span class="line">    container_name: cli</span><br><span class="line">    image: hyperledger/fabric-tools:$IMAGE_TAG</span><br><span class="line">    tty: true</span><br><span class="line">    stdin_open: true</span><br><span class="line">    environment:</span><br><span class="line">      - GOPATH=/opt/gopath</span><br><span class="line">      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock</span><br><span class="line">      #- FABRIC_LOGGING_SPEC=DEBUG</span><br><span class="line">      - FABRIC_LOGGING_SPEC=INFO</span><br><span class="line">      - CORE_PEER_ID=cli</span><br><span class="line">      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_LOCALMSPID=Org1MSP</span><br><span class="line">      - CORE_PEER_TLS_ENABLED=true</span><br><span class="line">      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.crt</span><br><span class="line">      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.key</span><br><span class="line">      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt</span><br><span class="line">      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp</span><br><span class="line">    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer</span><br><span class="line">    #command: /bin/bash</span><br><span class="line">    volumes:</span><br><span class="line">        - /var/run/:/host/var/run/</span><br><span class="line">        - ./../chaincode/:/opt/gopath/src/github.com/chaincode</span><br><span class="line">        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/</span><br><span class="line">        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/</span><br><span class="line">        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts</span><br><span class="line">    depends_on:</span><br><span class="line">      - peer0.org1.example.com</span><br><span class="line">    networks:</span><br><span class="line">      - byfn</span><br><span class="line">    extra_hosts:</span><br><span class="line">      - &quot;orderer.examplecom:192.168.146.131&quot;</span><br><span class="line">      - &quot;peer0.org1.example.com:192.168.146.134&quot;</span><br><span class="line">      - &quot;peer1.org1.example.com:192.168.146.135&quot;</span><br><span class="line">      - &quot;peer0.org2.example.com:192.168.146.136&quot;</span><br><span class="line">      - &quot;peer1.org2.example.com:192.168.146.128&quot;</span><br></pre></td></tr></table></figure></p>
+<p>同样，cli也需要能够和各个节点通讯，所以cli下面也需要添加 extra_hosts 设置，去掉无效的依赖，并且去掉command 这一行，因为我们是每个 peer 都会有个对应的客户端，也就是 cli，所以我只需要去手动执行一次命令，而不是自动运行。<br>但是目前我们的peer节点只是针对peer0.org1的，针对其他的peer节点我们还要做进一步的改进，参考peer0.org1的。</p>
+<h4 id="端口的配置"><a href="#端口的配置" class="headerlink" title="端口的配置"></a>端口的配置</h4><p>在单机模式下，4个peer会映射主机不同的端口，但是我们在多机部署的时候是不需要映射不同端口的，所以需要修改 base/docker-compose-base.yaml 文件，将所有 peer 的端口映射都改为相同的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"># Copyright IBM Corp. All Rights Reserved.</span><br><span class="line">#</span><br><span class="line"># SPDX-License-Identifier: Apache-2.0</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">version: &apos;2&apos;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"></span><br><span class="line">  orderer.example.com:</span><br><span class="line">    container_name: orderer.example.com</span><br><span class="line">    image: hyperledger/fabric-orderer:$IMAGE_TAG</span><br><span class="line">    environment:</span><br><span class="line">      - FABRIC_LOGGING_SPEC=INFO</span><br><span class="line">      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0</span><br><span class="line">      - ORDERER_GENERAL_GENESISMETHOD=file</span><br><span class="line">      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block</span><br><span class="line">      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP</span><br><span class="line">      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp</span><br><span class="line">      # enabled TLS</span><br><span class="line">      - ORDERER_GENERAL_TLS_ENABLED=true</span><br><span class="line">      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key</span><br><span class="line">      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt</span><br><span class="line">      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]</span><br><span class="line">      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1</span><br><span class="line">      - ORDERER_KAFKA_VERBOSE=true</span><br><span class="line">    working_dir: /opt/gopath/src/github.com/hyperledger/fabric</span><br><span class="line">    command: orderer</span><br><span class="line">    volumes:</span><br><span class="line">    - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block</span><br><span class="line">    - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp</span><br><span class="line">    - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls</span><br><span class="line">    - orderer.example.com:/var/hyperledger/production/orderer</span><br><span class="line">    ports:</span><br><span class="line">      - 7050:7050</span><br><span class="line"></span><br><span class="line">  peer0.org1.example.com:</span><br><span class="line">    container_name: peer0.org1.example.com</span><br><span class="line">    extends:</span><br><span class="line">      file: peer-base.yaml</span><br><span class="line">      service: peer-base</span><br><span class="line">    environment:</span><br><span class="line">      - CORE_PEER_ID=peer0.org1.example.com</span><br><span class="line">      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_LOCALMSPID=Org1MSP</span><br><span class="line">    volumes:</span><br><span class="line">        - /var/run/:/host/var/run/</span><br><span class="line">        - ../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp</span><br><span class="line">        - ../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls</span><br><span class="line">        - peer0.org1.example.com:/var/hyperledger/production</span><br><span class="line">    ports:</span><br><span class="line">      - 7051:7051</span><br><span class="line">      - 7052:7052</span><br><span class="line">      - 7053:7053</span><br><span class="line"></span><br><span class="line">  peer1.org1.example.com:</span><br><span class="line">    container_name: peer1.org1.example.com</span><br><span class="line">    extends:</span><br><span class="line">      file: peer-base.yaml</span><br><span class="line">      service: peer-base</span><br><span class="line">    environment:</span><br><span class="line">      - CORE_PEER_ID=peer1.org1.example.com</span><br><span class="line">      - CORE_PEER_ADDRESS=peer1.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051</span><br><span class="line">      - CORE_PEER_LOCALMSPID=Org1MSP</span><br><span class="line">    volumes:</span><br><span class="line">        - /var/run/:/host/var/run/</span><br><span class="line">        - ../crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp:/etc/hyperledger/fabric/msp</span><br><span class="line">        - ../crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls:/etc/hyperledger/fabric/tls</span><br><span class="line">        - peer1.org1.example.com:/var/hyperledger/production</span><br><span class="line"></span><br><span class="line">    ports:</span><br><span class="line">      - 7051:7051</span><br><span class="line">      - 7052:7052</span><br><span class="line">      - 7053:7053</span><br><span class="line"></span><br><span class="line">  peer0.org2.example.com:</span><br><span class="line">    container_name: peer0.org2.example.com</span><br><span class="line">    extends:</span><br><span class="line">      file: peer-base.yaml</span><br><span class="line">      service: peer-base</span><br><span class="line">    environment:</span><br><span class="line">      - CORE_PEER_ID=peer0.org2.example.com</span><br><span class="line">      - CORE_PEER_ADDRESS=peer0.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_LOCALMSPID=Org2MSP</span><br><span class="line">    volumes:</span><br><span class="line">        - /var/run/:/host/var/run/</span><br><span class="line">        - ../crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/fabric/msp</span><br><span class="line">        - ../crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/etc/hyperledger/fabric/tls</span><br><span class="line">        - peer0.org2.example.com:/var/hyperledger/production</span><br><span class="line">    ports:</span><br><span class="line">      - 7051:7051</span><br><span class="line">      - 7052:7052</span><br><span class="line">      - 7053:7053</span><br><span class="line"></span><br><span class="line">  peer1.org2.example.com:</span><br><span class="line">    container_name: peer1.org2.example.com</span><br><span class="line">    extends:</span><br><span class="line">      file: peer-base.yaml</span><br><span class="line">      service: peer-base</span><br><span class="line">    environment:</span><br><span class="line">      - CORE_PEER_ID=peer1.org2.example.com</span><br><span class="line">      - CORE_PEER_ADDRESS=peer1.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:7051</span><br><span class="line">      - CORE_PEER_LOCALMSPID=Org2MSP</span><br><span class="line">    volumes:</span><br><span class="line">        - /var/run/:/host/var/run/</span><br><span class="line">        - ../crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp:/etc/hyperledger/fabric/msp</span><br><span class="line">        - ../crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls:/etc/hyperledger/fabric/tls</span><br><span class="line">        - peer1.org2.example.com:/var/hyperledger/production</span><br><span class="line">    ports:</span><br><span class="line">      - 7051:7051</span><br><span class="line">      - 7052:7052</span><br><span class="line">      - 7053:7053</span><br></pre></td></tr></table></figure></p>
+<h2 id="0x03-分发文件"><a href="#0x03-分发文件" class="headerlink" title="0x03 分发文件"></a>0x03 分发文件</h2><hr>
+<p>将本地的first-networks的文件夹从order节点机器下发到各个peer节点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/expect</span><br><span class="line">#spawn scp -r Images batista@10.10.7.30:/home/batista/project/seana/</span><br><span class="line">#expect &quot;*yes&quot;</span><br><span class="line">#send &quot;yes\r&quot;</span><br><span class="line">#expect &quot;*password&quot; </span><br><span class="line">#send &quot;******\r&quot;</span><br><span class="line">#interact</span><br><span class="line">for &#123;set i 134&#125; &#123;$i &lt;=137&#125; &#123;incr i&#125; &#123;</span><br><span class="line">    set timeout 10</span><br><span class="line">    spawn scp -r first-network batista@192.168.146.$&#123;i&#125;:/home/batista/project/seana/fabric-samples/</span><br><span class="line">    expect &#123;</span><br><span class="line">	&quot;(yes/no)&quot; &#123; send &quot;yes\r&quot;; exp_continue &#125;</span><br><span class="line">	&quot;*password&quot; &#123; send &quot;yuziqi\r&quot; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    expect eof</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="0x04-启动网络即可"><a href="#0x04-启动网络即可" class="headerlink" title="0x04 启动网络即可"></a>0x04 启动网络即可</h2><hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose-orderer.yaml up</span><br><span class="line">docker-compose -f docker-compose-peer.yaml up</span><br><span class="line">docker-compose -f docker-compose-peer.yaml down</span><br><span class="line">docker-compose -f docker-compose-ordeer.yaml down</span><br></pre></td></tr></table></figure>
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/fabric/"># fabric</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/02/25/python_down（精脚本）/">python 大文件下载</a>
+            
+            
+            <a class="next" rel="next" href="/2019/01/07/逆向笔记(精)/">逆向笔记</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

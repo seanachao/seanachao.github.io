@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>鹏城杯 reverse FLOW | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#FLOW"><span class="toc-text">FLOW</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#exe转换为pyc"><span class="toc-text">exe转换为pyc</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#算法逆向分析"><span class="toc-text">算法逆向分析</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#0x01-encode-函数分析"><span class="toc-text">0x01 encode()函数分析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#0x02-decrypt函数"><span class="toc-text">0x02 decrypt函数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#0x03-finallu-chng函数"><span class="toc-text">0x03 finallu_chng函数</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">鹏城杯 reverse FLOW</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 2, 2018&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <p>比赛昨天下午开始，结果三个人昨天浪了一天，只能拖到今天看了看题目</p>
+<h4 id="FLOW"><a href="#FLOW" class="headerlink" title="FLOW"></a>FLOW</h4><hr>
+<p>拿到题目，看了看题目The time is precious。时间是宝贵的… 可能是出题人觉得题目太简单了？？？使用IDA反编译看了一下，发现是一堆的函数，但是反编译中有很多是和Python相关的,通过strings 工具查看文件。发现py2exe,考虑可能是Python开发的exe,通过pyinstaller打包后的exe程序。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images/strings.png" alt="string.png"></p>
+<h4 id="exe转换为pyc"><a href="#exe转换为pyc" class="headerlink" title="exe转换为pyc"></a>exe转换为pyc</h4><hr>
+<p>我们可以通过<strong>unpy2exe.py</strong>将文件转换为.pyc然后进一步通过<strong>rePy2exe.py</strong>将.pyc文件转换为py文件，经过处理后如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 2018.12.01 18:18:26 PST</span></span><br><span class="line"><span class="comment">#Embedded file name: CaR.py</span></span><br><span class="line"><span class="keyword">import</span> sys, os, hashlib, time, base64</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"><span class="keyword">from</span> flag <span class="keyword">import</span> flag</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">car_class_l1</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, public_car = None, car_lenth = <span class="number">16</span>)</span>:</span></span><br><span class="line">        self.car_lenth = car_lenth</span><br><span class="line">        self.public_car = public_car</span><br><span class="line">        car_l1 = hashlib.md5(self.public_car.encode(<span class="string">'utf-8'</span>)).hexdigest()</span><br><span class="line">        self.car_a = hashlib.md5(car_l1[<span class="number">0</span>:<span class="number">16</span>].encode(<span class="string">'utf-8'</span>)).hexdigest()</span><br><span class="line">        self.car_b = hashlib.md5(car_l1[<span class="number">16</span>:<span class="number">32</span>].encode(<span class="string">'utf-8'</span>)).hexdigest()</span><br><span class="line">        self.car_c = <span class="string">''</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">encode</span><span class="params">(self, string)</span>:</span></span><br><span class="line">        self.car_c = hashlib.md5(str(<span class="number">1234</span>).encode(<span class="string">'utf-8'</span>)).hexdigest()[<span class="number">32</span> - self.car_lenth:<span class="number">32</span>]</span><br><span class="line">        string = <span class="string">'0000000000'</span> + hashlib.md5((string + self.car_b).encode(<span class="string">'utf-8'</span>)).hexdigest()[<span class="number">0</span>:<span class="number">16</span>] <span class="comment">#+ string</span></span><br><span class="line">        <span class="keyword">print</span> string,len(string)</span><br><span class="line">        self.result = <span class="string">''</span></span><br><span class="line">        self.decrypt(string)</span><br><span class="line">        <span class="keyword">return</span> str(self.car_c + base64.b64encode(self.result))</span><br><span class="line">        <span class="comment"># st = str(self.car_c + base64.b64encgode(self.result))</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decrypt</span><span class="params">(self, string)</span>:</span></span><br><span class="line">        string_lenth = len(string)</span><br><span class="line">        result = <span class="string">''</span></span><br><span class="line">        char_set = list(range(<span class="number">256</span>))</span><br><span class="line">        char_rand_list = []</span><br><span class="line">        crypt_string1 = self.car_a + hashlib.md5((self.car_a + self.car_c).encode(<span class="string">'utf-8'</span>)).hexdigest()</span><br><span class="line">        crypt_string1_len = len(crypt_string1)</span><br><span class="line">        <span class="keyword">for</span> count_i <span class="keyword">in</span> range(<span class="number">255</span>):</span><br><span class="line">            char_rand_list.append(ord(crypt_string1[count_i % crypt_string1_len]))</span><br><span class="line">        <span class="comment">#print char_rand_list</span></span><br><span class="line">        <span class="keyword">for</span> count_i <span class="keyword">in</span> range(<span class="number">255</span>):</span><br><span class="line">            count_j = <span class="number">0</span></span><br><span class="line">            count_j = (count_j + char_set[count_i] + char_rand_list[count_i]) % <span class="number">256</span></span><br><span class="line">            de_result = char_set[count_i]</span><br><span class="line">            char_set[count_i] = char_set[count_j]</span><br><span class="line">            char_set[count_j] = de_result</span><br><span class="line">        <span class="comment">#print char_set</span></span><br><span class="line">        <span class="keyword">for</span> count_i <span class="keyword">in</span> range(string_lenth):</span><br><span class="line">            count_k = <span class="number">0</span></span><br><span class="line">            count_j = <span class="number">0</span></span><br><span class="line">            count_k = (count_k + <span class="number">1</span>) % <span class="number">256</span></span><br><span class="line">            count_j = (count_j + char_set[count_k]) % <span class="number">256</span></span><br><span class="line">            de_result = char_set[count_k]</span><br><span class="line">            char_set[count_k] = char_set[count_j]</span><br><span class="line">            char_set[count_j] = de_result</span><br><span class="line">            self.result += chr(ord(string[count_i]) ^ char_set[(char_set[count_k] + char_set[count_j]) % <span class="number">256</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">finallu_chng</span><span class="params">(finallu)</span>:</span></span><br><span class="line">    W = <span class="number">4</span></span><br><span class="line">    perm = range(W)</span><br><span class="line">    random.shuffle(perm)</span><br><span class="line">    <span class="keyword">while</span> len(finallu) % (<span class="number">2</span> * W):</span><br><span class="line">        finallu += <span class="string">'.'</span></span><br><span class="line">    <span class="keyword">print</span> finallu</span><br><span class="line">    <span class="keyword">for</span> count_i <span class="keyword">in</span> xrange(<span class="number">100</span>):</span><br><span class="line">        finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">        finallu = finallu[<span class="number">0</span>::<span class="number">2</span>] + finallu[<span class="number">1</span>::<span class="number">2</span>]</span><br><span class="line">        finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">        res = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> count_j <span class="keyword">in</span> xrange(<span class="number">0</span>, len(finallu), W):</span><br><span class="line">            <span class="keyword">for</span> lchar_setl <span class="keyword">in</span> xrange(W):</span><br><span class="line">                res += finallu[count_j:count_j + W][perm[lchar_setl]]</span><br><span class="line">                <span class="comment">#print finallu[count_j:count_j + W][perm[lchar_setl]]</span></span><br><span class="line"></span><br><span class="line">        finallu1 = res</span><br><span class="line">    <span class="keyword">return</span> finallu1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    rc = car_class_l1(<span class="string">'sdfgowormznsjx9ooxxx'</span>)</span><br><span class="line">    string = flag</span><br><span class="line">    string = finallu_chng(string)</span><br><span class="line">    st = rc.encode(string)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"The result is"</span>,st</span><br><span class="line"><span class="comment"># +++ okay decompyling CaR.py.pyc </span></span><br><span class="line"><span class="comment"># # decompiled 1 files: 1 okay, 0 failed, 0 verify failed</span></span><br><span class="line"><span class="comment"># # 2018.12.01 18:18:26 PST</span></span><br></pre></td></tr></table></figure>
+<h4 id="算法逆向分析"><a href="#算法逆向分析" class="headerlink" title="算法逆向分析"></a>算法逆向分析</h4><hr>
+<p>在给出FLAG的字符串后，先经过<strong>finallu_chng()</strong>函数处理后，然后经过<strong>encode()</strong>得到最后的输出结果。连接到NC后得到字符串<em>0036dbd8313ed055NJD5H1Ufzl75UfLf1JgrfxKNwNca3fcyERbivXzTt4x/hEPt+P7s3BiGfihF0N8Sm5woY4Jqjsn7qqiwU+y1/uN/</em>，从源代码可知，我们得到的是st的值。我们需要的是FLAG的值。因此我们要从<strong>encode()</strong>函数依次向后推得到FLAG。</p>
+<h5 id="0x01-encode-函数分析"><a href="#0x01-encode-函数分析" class="headerlink" title="0x01 encode()函数分析"></a>0x01 encode()函数分析</h5><p>encode函数中，我们最后得到是base64加密的结果,self.car_c的长度是固定的，所以通过字符串st的值我们可以得到经过b64加密的字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span><span class="params">(self, string)</span>:</span></span><br><span class="line">    self.car_c = hashlib.md5(str(<span class="number">1234</span>).encode(<span class="string">'utf-8'</span>)).hexdigest()[<span class="number">32</span> - self.car_lenth:<span class="number">32</span>]</span><br><span class="line">    string = <span class="string">'0000000000'</span> + hashlib.md5((string + self.car_b).encode(<span class="string">'utf-8'</span>)).hexdigest()[<span class="number">0</span>:<span class="number">16</span>] <span class="comment">#+ string</span></span><br><span class="line">    <span class="keyword">print</span> string,len(string)</span><br><span class="line">    self.result = <span class="string">''</span></span><br><span class="line">    self.decrypt(string)</span><br><span class="line">    <span class="keyword">return</span> str(self.car_c + base64.b64encode(self.result))</span><br></pre></td></tr></table></figure>
+<p>将st的b64加密部分解密。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line">string_1 = <span class="string">"0036dbd8313ed055NJD5H1Ufzl75UfLf1JgrfxKNwNca3fcyERbivXzTt4x/hEPt+P7s3BiGfihF0N8Sm5woY4Jqjsn7qqiwU+y1/uN/"</span></span><br><span class="line"><span class="keyword">print</span> string_1[<span class="number">0</span>:<span class="number">16</span>]</span><br><span class="line">car_c = string_1[<span class="number">0</span>:<span class="number">16</span>]</span><br><span class="line">bs64_res = string_1[<span class="number">16</span>:]<span class="comment">#b64加密部分</span></span><br><span class="line">de_res = base64.b64decode(bs64_res)</span><br></pre></td></tr></table></figure>
+<p>解密后我们可以得到的是<strong>self.result</strong>,在<strong>encode()</strong>函数中,当我们得到self.resul后，接下来分析<strong>Decrypt()</strong>函数。</p>
+<h5 id="0x02-decrypt函数"><a href="#0x02-decrypt函数" class="headerlink" title="0x02 decrypt函数"></a>0x02 decrypt函数</h5><p>在decrypt函数中，<strong>char_set = list(range(256))</strong>生成了256个字符的一个列表，之后经过一系列操作，列表中的顺序有所改变。但是最后的顺序是固定的。然后在函数的最后通过异或操作与string输入字符串进行异或。再异或依次便可以解密得到真正的string,再去掉一部分头部即可得到经过<strong>finallu_chng()</strong>加密后的字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">char_set = [<span class="number">202</span>, <span class="number">158</span>, <span class="number">160</span>, <span class="number">206</span>, <span class="number">1</span>, <span class="number">205</span>, <span class="number">163</span>, <span class="number">166</span>, <span class="number">215</span>, <span class="number">164</span>, <span class="number">64</span>, <span class="number">169</span>, <span class="number">114</span>, <span class="number">62</span>, <span class="number">67</span>, <span class="number">12</span>, <span class="number">118</span>, <span class="number">73</span>, <span class="number">115</span>, <span class="number">225</span>, <span class="number">177</span>, <span class="number">226</span>, <span class="number">180</span>, <span class="number">72</span>, <span class="number">181</span>, <span class="number">228</span>, <span class="number">82</span>, <span class="number">231</span>, <span class="number">233</span>, <span class="number">25</span>, <span class="number">185</span>, <span class="number">236</span>, <span class="number">186</span>, <span class="number">28</span>, <span class="number">85</span>, <span class="number">134</span>, <span class="number">89</span>, <span class="number">239</span>, <span class="number">246</span>, <span class="number">194</span>, <span class="number">244</span>, <span class="number">195</span>, <span class="number">97</span>, <span class="number">95</span>, <span class="number">43</span>, <span class="number">245</span>, <span class="number">252</span>, <span class="number">0</span>, <span class="number">203</span>, <span class="number">148</span>, <span class="number">207</span>, <span class="number">210</span>, <span class="number">104</span>, <span class="number">9</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">105</span>, <span class="number">156</span>, <span class="number">60</span>, <span class="number">159</span>, <span class="number">221</span>, <span class="number">13</span>, <span class="number">10</span>, <span class="number">222</span>, <span class="number">121</span>, <span class="number">19</span>, <span class="number">167</span>, <span class="number">165</span>, <span class="number">227</span>, <span class="number">230</span>, <span class="number">31</span>, <span class="number">18</span>, <span class="number">128</span>, <span class="number">22</span>, <span class="number">178</span>, <span class="number">29</span>, <span class="number">131</span>, <span class="number">76</span>, <span class="number">125</span>, <span class="number">137</span>, <span class="number">123</span>, <span class="number">35</span>, <span class="number">241</span>, <span class="number">240</span>, <span class="number">81</span>, <span class="number">38</span>, <span class="number">39</span>, <span class="number">86</span>, <span class="number">34</span>, <span class="number">248</span>, <span class="number">251</span>, <span class="number">44</span>, <span class="number">41</span>, <span class="number">190</span>, <span class="number">139</span>, <span class="number">96</span>, <span class="number">48</span>, <span class="number">198</span>, <span class="number">2</span>, <span class="number">52</span>, <span class="number">50</span>, <span class="number">47</span>, <span class="number">46</span>, <span class="number">6</span>, <span class="number">14</span>, <span class="number">61</span>, <span class="number">107</span>, <span class="number">152</span>, <span class="number">106</span>, <span class="number">111</span>, <span class="number">11</span>, <span class="number">212</span>, <span class="number">59</span>, <span class="number">122</span>, <span class="number">168</span>, <span class="number">173</span>, <span class="number">66</span>, <span class="number">174</span>, <span class="number">63</span>, <span class="number">23</span>, <span class="number">26</span>, <span class="number">70</span>, <span class="number">119</span>, <span class="number">68</span>, <span class="number">71</span>, <span class="number">77</span>, <span class="number">74</span>, <span class="number">79</span>, <span class="number">136</span>, <span class="number">133</span>, <span class="number">84</span>, <span class="number">229</span>, <span class="number">33</span>, <span class="number">32</span>, <span class="number">36</span>, <span class="number">45</span>, <span class="number">145</span>, <span class="number">142</span>, <span class="number">242</span>, <span class="number">90</span>, <span class="number">40</span>, <span class="number">140</span>, <span class="number">189</span>, <span class="number">199</span>, <span class="number">243</span>, <span class="number">99</span>, <span class="number">197</span>, <span class="number">93</span>, <span class="number">201</span>, <span class="number">102</span>, <span class="number">154</span>, <span class="number">254</span>, <span class="number">98</span>, <span class="number">103</span>, <span class="number">110</span>, <span class="number">108</span>, <span class="number">155</span>, <span class="number">153</span>, <span class="number">57</span>, <span class="number">211</span>, <span class="number">213</span>, <span class="number">54</span>, <span class="number">217</span>, <span class="number">170</span>, <span class="number">56</span>, <span class="number">116</span>, <span class="number">214</span>, <span class="number">220</span>, <span class="number">78</span>, <span class="number">223</span>, <span class="number">124</span>, <span class="number">216</span>, <span class="number">171</span>, <span class="number">175</span>, <span class="number">75</span>, <span class="number">16</span>, <span class="number">30</span>, <span class="number">234</span>, <span class="number">232</span>, <span class="number">237</span>, <span class="number">132</span>, <span class="number">238</span>, <span class="number">127</span>, <span class="number">87</span>, <span class="number">130</span>, <span class="number">83</span>, <span class="number">183</span>, <span class="number">27</span>, <span class="number">53</span>, <span class="number">94</span>, <span class="number">191</span>, <span class="number">143</span>, <span class="number">249</span>, <span class="number">146</span>, <span class="number">193</span>, <span class="number">147</span>, <span class="number">49</span>, <span class="number">200</span>, <span class="number">208</span>, <span class="number">250</span>, <span class="number">101</span>, <span class="number">149</span>, <span class="number">100</span>, <span class="number">157</span>, <span class="number">51</span>, <span class="number">204</span>, <span class="number">253</span>, <span class="number">109</span>, <span class="number">58</span>, <span class="number">113</span>, <span class="number">161</span>, <span class="number">117</span>, <span class="number">21</span>, <span class="number">65</span>, <span class="number">218</span>, <span class="number">209</span>, <span class="number">162</span>, <span class="number">15</span>, <span class="number">224</span>, <span class="number">172</span>, <span class="number">219</span>, <span class="number">7</span>, <span class="number">112</span>, <span class="number">69</span>, <span class="number">176</span>, <span class="number">20</span>, <span class="number">126</span>, <span class="number">129</span>, <span class="number">120</span>, <span class="number">184</span>, <span class="number">17</span>, <span class="number">187</span>, <span class="number">179</span>, <span class="number">24</span>, <span class="number">188</span>, <span class="number">80</span>, <span class="number">235</span>, <span class="number">192</span>, <span class="number">88</span>, <span class="number">182</span>, <span class="number">91</span>, <span class="number">150</span>, <span class="number">138</span>, <span class="number">144</span>, <span class="number">135</span>, <span class="number">37</span>, <span class="number">141</span>, <span class="number">151</span>, <span class="number">92</span>, <span class="number">42</span>, <span class="number">247</span>, <span class="number">196</span>, <span class="number">55</span>, <span class="number">255</span>]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">step1_decry</span><span class="params">(string_1)</span>:</span></span><br><span class="line">	result = <span class="string">""</span></span><br><span class="line">	<span class="keyword">for</span> count_i <span class="keyword">in</span> range(len(string_1)):</span><br><span class="line">		count_k = <span class="number">0</span></span><br><span class="line">		count_j = <span class="number">0</span></span><br><span class="line">		count_k = (count_k + <span class="number">1</span>) % <span class="number">256</span></span><br><span class="line">		count_j = (count_j + char_set[count_k]) % <span class="number">256</span></span><br><span class="line">		de_result = char_set[count_k]</span><br><span class="line">		char_set[count_k] = char_set[count_j]</span><br><span class="line">		char_set[count_j] = de_result</span><br><span class="line">		result += chr(ord(string_1[count_i]) ^ char_set[(char_set[count_k] + char_set[count_j]) % <span class="number">256</span>])</span><br><span class="line">	<span class="keyword">print</span> result</span><br><span class="line">	<span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<h5 id="0x03-finallu-chng函数"><a href="#0x03-finallu-chng函数" class="headerlink" title="0x03 finallu_chng函数"></a>0x03 finallu_chng函数</h5><p>函数中首先生成一个列表[0,1,2,3]然后通过random.shuffle()函数打乱列表的顺序。while循环使得finallu的长度是8的倍数，不足的情况下补充 <strong>‘.’</strong>,然后将如下操作循环100次。</p>
+<ul>
+<li>首字母后移到字符串末尾</li>
+<li>取字符串偶数部分的字符，字符串奇数部分的字符，构成新的字符串</li>
+<li>首字母移动到字符串末尾</li>
+<li>将新的字符串按照四个一组，按照新生成的列表perm里的顺序重新排列四个字符</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">finallu_chng</span><span class="params">(finallu)</span>:</span></span><br><span class="line">    W = <span class="number">4</span></span><br><span class="line">    perm = range(W)</span><br><span class="line">    random.shuffle(perm)</span><br><span class="line">    <span class="keyword">while</span> len(finallu) % (<span class="number">2</span> * W):</span><br><span class="line">        finallu += <span class="string">'.'</span></span><br><span class="line">    <span class="keyword">print</span> finallu</span><br><span class="line">    <span class="keyword">for</span> count_i <span class="keyword">in</span> xrange(<span class="number">100</span>):</span><br><span class="line">        finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">        finallu = finallu[<span class="number">0</span>::<span class="number">2</span>] + finallu[<span class="number">1</span>::<span class="number">2</span>]</span><br><span class="line">        finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">        res = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> count_j <span class="keyword">in</span> xrange(<span class="number">0</span>, len(finallu), W):</span><br><span class="line">            <span class="keyword">for</span> lchar_setl <span class="keyword">in</span> xrange(W):</span><br><span class="line">                res += finallu[count_j:count_j + W][perm[lchar_setl]]</span><br><span class="line">                <span class="comment">#print finallu[count_j:count_j + W][perm[lchar_setl]]</span></span><br><span class="line"></span><br><span class="line">        finallu1 = res</span><br><span class="line">    <span class="keyword">return</span> finallu1</span><br></pre></td></tr></table></figure>
+<p>得到算法流程后，逆向写出解题脚本，由于我们不知道正确的顺序，由于<strong>random.shuffle()</strong>每次生成的顺序不固定，所以我们可以通过多次random.shuffle来生成列表，爆破得到最后的flag</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">finallu_chng</span><span class="params">(finallu)</span>:</span></span><br><span class="line">	W = <span class="number">4</span></span><br><span class="line">	perm = range(W)</span><br><span class="line">	<span class="comment">#random.shuffle(perm)</span></span><br><span class="line">	perm = [<span class="number">3</span>,<span class="number">2</span>,<span class="number">0</span>,<span class="number">1</span>]</span><br><span class="line">	<span class="keyword">while</span> len(finallu) % (<span class="number">2</span> * W):</span><br><span class="line">		finallu += <span class="string">'.'</span></span><br><span class="line">		<span class="comment">#print finallu</span></span><br><span class="line">	<span class="keyword">for</span> count_i <span class="keyword">in</span> xrange(<span class="number">100</span>):</span><br><span class="line">		finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">		finallu = finallu[<span class="number">0</span>::<span class="number">2</span>] + finallu[<span class="number">1</span>::<span class="number">2</span>]</span><br><span class="line">		finallu = finallu[<span class="number">1</span>:] + finallu[:<span class="number">1</span>]</span><br><span class="line">		res = <span class="string">''</span></span><br><span class="line">		<span class="keyword">for</span> count_j <span class="keyword">in</span> xrange(<span class="number">0</span>, len(finallu), W):</span><br><span class="line">			<span class="keyword">for</span> lchar_setl <span class="keyword">in</span> xrange(W):</span><br><span class="line">				res += finallu[count_j:count_j + W][perm[lchar_setl]]				</span><br><span class="line">		finallu = res</span><br><span class="line">	<span class="keyword">return</span> finallu</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decrypt</span><span class="params">(string1)</span>:</span></span><br><span class="line">	W = <span class="number">4</span></span><br><span class="line">	flag_res = string1</span><br><span class="line">	perm = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span><br><span class="line">	random.shuffle(perm)</span><br><span class="line">	<span class="keyword">for</span> count_i <span class="keyword">in</span> xrange(<span class="number">100</span>):</span><br><span class="line">		res = <span class="string">""</span></span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">0</span>,len(string1),W):</span><br><span class="line">			<span class="keyword">for</span> k <span class="keyword">in</span> xrange(<span class="number">4</span>):</span><br><span class="line">				res += flag_res[i:i+W][perm.index(k)]<span class="comment">#关键处,index使用的是正确的顺序</span></span><br><span class="line">		flag_res = res</span><br><span class="line">		flag_res = flag_res[<span class="number">-1</span>:]+flag_res[:<span class="number">-1</span>]</span><br><span class="line">		<span class="comment">#print flag_res</span></span><br><span class="line">		res = <span class="string">""</span></span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(flag_res)/<span class="number">2</span>):</span><br><span class="line">			res = res + flag_res[i]+flag_res[i+len(flag_res)/<span class="number">2</span>]</span><br><span class="line">		flag_res = res</span><br><span class="line">		flag_res = flag_res[<span class="number">-1</span>:]+flag_res[:<span class="number">-1</span>]</span><br><span class="line">	<span class="keyword">return</span> flag_res</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	result = tep1_decry(de_res)</span><br><span class="line">	result = result[<span class="number">26</span>:]</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>):</span><br><span class="line">		flag = decrypt(result)</span><br><span class="line">		<span class="keyword">if</span> <span class="string">"flag"</span> <span class="keyword">in</span> flag:</span><br><span class="line">			<span class="keyword">print</span> flag</span><br></pre></td></tr></table></figure>
+<p><strong>flag{9789e2e95ec53daea99d54b3ca9c357d}</strong></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><hr>
+<p>exe 到python的逆向，可以使用工具rePy2exe.py,github链接<a href="https://github.com/4w4k3/rePy2exe，也可以参考http://blog.nsfocus.net/wp-content/uploads/2015/09/reverse_400.pdf，使用工具" target="_blank" rel="noopener">https://github.com/4w4k3/rePy2exe，也可以参考http://blog.nsfocus.net/wp-content/uploads/2015/09/reverse_400.pdf，使用工具</a> PyInstaller Extractor 通过 <em>python pyinstxtractor.py Revesre03.exe</em>来解题，也可以通过uncompyle <a href="https://github.com/wibiti/uncompyle2" target="_blank" rel="noopener">https://github.com/wibiti/uncompyle2</a> uncompyle,pycdc 来解题。</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/12/05/安恒九月赛re复现/">安恒九月月赛re复现</a>
+            
+            
+            <a class="next" rel="next" href="/2018/11/29/湖湘杯re题目复现/">湖湘杯replace题目复现</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

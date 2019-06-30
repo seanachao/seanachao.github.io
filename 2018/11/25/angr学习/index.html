@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>angr学习 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#0x00-安装"><span class="toc-text">0x00 安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x01-angr-简介"><span class="toc-text">0x01 angr 简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x02-angr-基本用法"><span class="toc-text">0x02 angr 基本用法</span></a></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-程序带参数执行"><span class="toc-text">0x03 程序带参数执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-参考博文"><span class="toc-text">0x04 参考博文</span></a>
+            </li></div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">angr学习</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 25, 2018&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h4 id="0x00-安装"><a href="#0x00-安装" class="headerlink" title="0x00 安装"></a>0x00 安装</h4><p>虚拟环境:  <strong>virtualenvmrapper</strong></p>
+<h4 id="0x01-angr-简介"><a href="#0x01-angr-简介" class="headerlink" title="0x01 angr 简介"></a>0x01 angr 简介</h4><hr>
+<p>angr <a href="https://angr.io/" target="_blank" rel="noopener">官网</a></p>
+<p>官网对angr给出的解释是,angr是一款二进制分析工具，它包含动态和静态符号分析，可以用来处理各种任务。本文主要针对angr解CTF题目做简单介绍。</p>
+<h4 id="0x02-angr-基本用法"><a href="#0x02-angr-基本用法" class="headerlink" title="0x02 angr 基本用法"></a>0x02 angr 基本用法</h4><hr>
+<p>以defcamp_quals 2015的r100题目为例</p>
+<p>首先将载入二进制文件 r100, auto_load_libs 是设置是否自动加载外部动态链接。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> angr</span><br><span class="line">proj = angr.Project(<span class="string">'./r100'</span>,auto_load_libs = <span class="keyword">False</span>)</span><br></pre></td></tr></table></figure>
+<p>然后获取当前的入口状态</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">state = proj.factory.entry_state()</span><br></pre></td></tr></table></figure>
+<p>在获取到当前的入口状态后，模拟执行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">simg = proj.factory.simgr(state)</span><br></pre></td></tr></table></figure>
+<p>模拟执行后产生多种状态，我们要选择最终要到达的，过滤掉不需要的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">simg.explore(find = <span class="number">0x400844</span>, avoid = <span class="number">0x400855</span>)</span><br><span class="line"><span class="comment">#e = b.surveyors.Explorer(find=(0x4006ed,), avoid=(0x4006aa,0x4006fd))</span></span><br></pre></td></tr></table></figure>
+<p>获取最终的状态结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">simg.found[0].posix.dumps(3)</span><br></pre></td></tr></table></figure>
+<p>最终的结果如下,Code_Talkers即是我们最终需要的答案。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">10</span>]: simr.found[<span class="number">0</span>].posix.dumps(<span class="number">3</span>)</span><br><span class="line">Out[<span class="number">10</span>]: <span class="string">'Code_Talkers\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\xf5\x00'</span></span><br></pre></td></tr></table></figure>
+<h3 id="0x03-程序带参数执行"><a href="#0x03-程序带参数执行" class="headerlink" title="0x03 程序带参数执行"></a>0x03 程序带参数执行</h3><hr>
+<p>某些程序我们在程序运行的时候就应该输入参数，利用以 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./example hello #运行</span><br></pre></td></tr></table></figure>
+<p>载入文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> angr</span><br><span class="line"><span class="keyword">import</span> claripy <span class="comment">#引入参数</span></span><br><span class="line">proj = angr.Project(<span class="string">'./ais3_crackme'</span>,auto_load_libs = <span class="keyword">False</span>)</span><br></pre></td></tr></table></figure>
+<p>设置初始参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">argv1 = claripy.BVS(&apos;argv1&apos;,50*8) #BVS给的是二进制的参数,50*8才是50字节</span><br></pre></td></tr></table></figure>
+<p>获取初始状态</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">state = proj.factory.entry_state(args = [<span class="string">'ais3_crackme'</span>,argv1])</span><br></pre></td></tr></table></figure>
+<p>获取其各种状态，并explore</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">simg  = proj.factory.simgr(state)</span><br><span class="line">simg.explore(find = <span class="number">0x400602</span>, avoid = <span class="number">0x40060E</span>)</span><br></pre></td></tr></table></figure>
+<p>得到最终的结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">simg.found[0].solver.eval(argv1)#asscii码形式</span><br><span class="line">#simg.found[0].solver.eval(argv1,cast_str)</span><br></pre></td></tr></table></figure>
+<h3 id="0x04-参考博文"><a href="#0x04-参考博文" class="headerlink" title="0x04 参考博文"></a>0x04 参考博文</h3><p><a href="httsp://wzt.ac.cn/2018/04/04/angr%E6%A1%86%E6%9E%B6%E5%88%9D%E6%8E%A2/" target="_blank" rel="noopener">angr框架初探</a></p>
+<p><a href="https://bestwing.me/2017/03/08/angr-study/" target="_blank" rel="noopener">angr学习</a></p>
+<p><a href="http://ysc21.github.io/archives/page/2/" target="_blank" rel="noopener">angr汇总</a></p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/reverse/"># reverse</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/11/25/NCTF 2018 reverse 部分题解/">NCTF reverse部分题解</a>
+            
+            
+            <a class="next" rel="next" href="/2018/11/23/dll调用/">DLL的巧妙利用</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

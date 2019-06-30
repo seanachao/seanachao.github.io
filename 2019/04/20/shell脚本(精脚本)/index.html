@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>shell脚本 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#shell脚本研究"><span class="toc-text">shell脚本研究</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#byfn-sh脚本学习"><span class="toc-text">byfn.sh脚本学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shell-脚本中的-任意符号代表的意思"><span class="toc-text">shell 脚本中的 $任意符号代表的意思</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shell脚本中set-命令"><span class="toc-text">shell脚本中set 命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#监控带宽"><span class="toc-text">监控带宽</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shell-打包脚本"><span class="toc-text">shell 打包脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#过滤特定的文件"><span class="toc-text">过滤特定的文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大小写"><span class="toc-text">大小写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解压文件"><span class="toc-text">解压文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OS"><span class="toc-text">OS</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">shell脚本</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 20, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/脚本/">脚本</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="shell脚本研究"><a href="#shell脚本研究" class="headerlink" title="shell脚本研究"></a><strong>shell脚本研究</strong></h3><hr>
+<h3 id="byfn-sh脚本学习"><a href="#byfn-sh脚本学习" class="headerlink" title="byfn.sh脚本学习"></a>byfn.sh脚本学习</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if [ ! -d "crypto-config"  ] #是否存在这个文件</span><br></pre></td></tr></table></figure>
+<h3 id="shell-脚本中的-任意符号代表的意思"><a href="#shell-脚本中的-任意符号代表的意思" class="headerlink" title="shell 脚本中的 $任意符号代表的意思"></a>shell 脚本中的 $任意符号代表的意思</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$# 是传给脚本的参数个数</span><br><span class="line">$0 是脚本本身的名字</span><br><span class="line">$1 是传递给该shell脚本的第一个参数</span><br><span class="line">$2 是传递给该shell脚本的第二个参数</span><br><span class="line">$@ 是传给脚本的所有参数的列表</span><br><span class="line">$* 是以一个单字符串显示所有向脚本传递的参数，与位置变量不同，参数可超过9个</span><br><span class="line">$$ 是脚本运行的当前进程ID号</span><br><span class="line">$? 是显示最后命令的退出状态，0表示没有错误，其他表示有错误</span><br><span class="line">$0 这个程式的执行名字</span><br><span class="line">$n 这个程式的第n个参数值，n=1..9</span><br><span class="line">$* 这个程式的所有参数,此选项参数可超过9个。</span><br><span class="line">$# 这个程式的参数个数</span><br><span class="line">$$ 这个程式的PID(脚本运行的当前进程ID号)</span><br><span class="line">$! 执行上一个背景指令的PID(后台运行的最后一个进程的进程ID号)</span><br><span class="line">$? 执行上一个指令的返回值 (显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误)</span><br><span class="line">$- 显示shell使用的当前选项，与set命令功能相同</span><br><span class="line">$@ 跟$*类似，但是可以当作数组用</span><br></pre></td></tr></table></figure>
+<h3 id="shell脚本中set-命令"><a href="#shell脚本中set-命令" class="headerlink" title="shell脚本中set 命令"></a><strong>shell脚本中set</strong> 命令</h3><p>set去追踪一段代码的显示情况，执行后在整个脚本有效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set -x 开启 </span><br><span class="line">set +x关闭</span><br><span class="line">set -o 查看</span><br></pre></td></tr></table></figure></p>
+<h3 id="监控带宽"><a href="#监控带宽" class="headerlink" title="监控带宽"></a><strong>监控带宽</strong></h3><p>可以用nethogs</p>
+<h3 id="shell-打包脚本"><a href="#shell-打包脚本" class="headerlink" title="shell 打包脚本"></a><strong>shell</strong> 打包脚本</h3><p>由于直接使用docker pull无法从服务器pull下来镜像，我们采用个人的服务器作为中转，将镜像pull至阿里云服务器，通过docker save 打包，然后通过docker load载入。打包脚本如下:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>docker images &gt; ./images.txt </span><br><span class="line"><span class="meta">#</span>awk '&#123;print $1&#125;' ./images.txt &gt; ./out.txt </span><br><span class="line">IMAGES=$(docker images | awk '&#123;printf("%s:%s %s %s\n", $1,$2,$3,$4)&#125;'| grep "hyperledger") </span><br><span class="line">echo "$&#123;IMAGES&#125;" | while read line </span><br><span class="line">do </span><br><span class="line">    NAMES=$(echo "$&#123;line&#125;" | awk '&#123;printf $2&#125;') </span><br><span class="line">    VERSION=$(echo "$&#123;line&#125;" | awk '&#123;printf $1&#125;') </span><br><span class="line">    #echo "$&#123;NAMES&#125;" </span><br><span class="line">    docker save -o $NAMES".tar" $VERSION </span><br><span class="line">    #echo "$&#123;line&#125;" </span><br><span class="line">done </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">IMAGES=$(docker images | awk '&#123;printf("%s %s %s %s\n",$1,$2,$3,$4)&#125;')</span><br><span class="line">echo $IMAGES</span><br><span class="line">a=1</span><br><span class="line">echo "$IMAGES" | while read line</span><br><span class="line">do</span><br><span class="line">if [ $a -eq 1 ];then</span><br><span class="line">   echo "skip"</span><br><span class="line">   a=2</span><br><span class="line">else</span><br><span class="line">   IMAGE_NAME=$(echo $line | awk '&#123;printf("%s",$1)&#125;')</span><br><span class="line">   IMAGE_VERSION=$(echo $line | awk '&#123;printf("%s\n",$2)&#125;')</span><br><span class="line">   if [ $IMAGE_VERSION = "&lt;none&gt;" ];then</span><br><span class="line">      echo "skip"</span><br><span class="line">   else</span><br><span class="line">      IMAGE=$IMAGE_NAME":"$IMAGE_VERSION</span><br><span class="line">      NAME=$(echo $line | awk '&#123;printf("%s",$3)&#125;')</span><br><span class="line">      NEW_IMAGE=$IMAGE_VERSION"."$NAME</span><br><span class="line">      docker save -o $NEW_IMAGE".tar" $IMAGE</span><br><span class="line">   fi</span><br><span class="line">fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
+<p>脚本中 awk 用来提取某一列元素，IMAGES=$(命令)是将命令执行的结果赋值给变量，注意等式前后两侧均不留空隙,字符串的连接可以通过直接跟上”字符串”即可。echo “${var}$”可以按照原来的格式输出变量，如果只是echo “$VAR” 或者 echo $VAR输出的会没有换行。</p>
+<h3 id="过滤特定的文件"><a href="#过滤特定的文件" class="headerlink" title="过滤特定的文件"></a>过滤特定的文件</h3><p>方案一<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find ./ -not -name &quot;*.yaml&quot;</span><br></pre></td></tr></table></figure></p>
+<p>方案二<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls |egrep -v yaml</span><br></pre></td></tr></table></figure></p>
+<h3 id="大小写"><a href="#大小写" class="headerlink" title="大小写"></a>大小写</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">变量（字符串）变换</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">定义一个变量t，内容为framE</span><br><span class="line">[root@vm1 tmp]# t=framE</span><br><span class="line"></span><br><span class="line">查看变量t的内容：echo $t或者是echo $&#123;t&#125;</span><br><span class="line">[root@vm1 tmp]# echo $t</span><br><span class="line">framE</span><br><span class="line">[root@vm1 tmp]#</span><br><span class="line"></span><br><span class="line">将变量t的首字母大写：echo $&#123;t^&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t^&#125;</span><br><span class="line">FramE</span><br><span class="line">[root@vm1 tmp]# </span><br><span class="line"></span><br><span class="line">将变量t的所有字母大写：echo $&#123;t^^&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t^^&#125;</span><br><span class="line">FRAME</span><br><span class="line">[root@vm1 tmp]# </span><br><span class="line"></span><br><span class="line">将变量t的首字母小写：echo $&#123;t,&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t,&#125;</span><br><span class="line">framE</span><br><span class="line">[root@vm1 tmp]#</span><br><span class="line"></span><br><span class="line">将变量t的所有字母小写：echo $&#123;t,,&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t,,&#125;</span><br><span class="line">frame</span><br><span class="line">[root@vm1 tmp]# </span><br><span class="line"></span><br><span class="line">将变量t的首字母大小写切换：echo $&#123;t~&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t~&#125;</span><br><span class="line">FramE</span><br><span class="line">[root@vm1 tmp]#</span><br><span class="line"></span><br><span class="line">将变量t的所有字母大小写切换：echo $&#123;t~~&#125;</span><br><span class="line">[root@vm1 tmp]# echo $&#123;t~~&#125;</span><br><span class="line">FRAMe</span><br><span class="line">[root@vm1 tmp]# </span><br><span class="line"></span><br><span class="line">总结：</span><br><span class="line"></span><br><span class="line">^：首字母大写</span><br><span class="line">^^：所有字母大写</span><br><span class="line">,：首字母小写</span><br><span class="line">,,：所有字母小写</span><br><span class="line">~：首字母大小写切换</span><br><span class="line">~~：所有字母大小写切换</span><br><span class="line"></span><br><span class="line">移除匹配的字符串</span><br><span class="line"></span><br><span class="line">定义一个变量filename，该变量的值为pwd所对应的当前路径</span><br><span class="line">[root@vm1 network-scripts]# filename=&quot;$(pwd)&quot;</span><br><span class="line">[root@vm1 network-scripts]# echo $filename</span><br><span class="line">/etc/sysconfig/network-scripts</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">从前往后删，删除掉最短的一个&quot;/&quot;</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename#*/&#125;</span><br><span class="line">etc/sysconfig/network-scripts</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">从前往后删，删除掉最长的一个&quot;/&quot;</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename##*/&#125;</span><br><span class="line">network-scripts</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">从后往前删，删除掉最短的一个&quot;/&quot;</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename%/*&#125;</span><br><span class="line">/etc/sysconfig</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">从后往前删，删除掉最短的一个&quot;/&quot;</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename%%/*&#125;</span><br><span class="line"></span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#：从前往后删，删除掉最短的一个</span><br><span class="line">##：从前往后删，删除掉最长的一个</span><br><span class="line">%：从后往前删，删除掉最短的一个</span><br><span class="line">%%：从后往前删，删除掉最长的一个</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">查找与替换</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">查看变量filename的内容：</span><br><span class="line">[root@vm1 network-scripts]# echo $filename</span><br><span class="line">/etc/sysconfig/network-scripts</span><br><span class="line">[root@vm1 network-scripts]#</span><br><span class="line"></span><br><span class="line">将第一次出现的小写s替换成大写的S</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename/s/S&#125;</span><br><span class="line">/etc/Sysconfig/network-scripts</span><br><span class="line">[root@vm1 network-scripts]#</span><br><span class="line"></span><br><span class="line">将所有的小写s替换成大写的S</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename//s/S&#125;</span><br><span class="line">/etc/SySconfig/network-ScriptS</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">总结：</span><br><span class="line">/match/value：将第一次出现的match地换成value</span><br><span class="line">//match/value：将所有的match替换成value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">其他字符串的操作符</span><br><span class="line"></span><br><span class="line">查询字符串的长度：echo &#123;#filename&#125;</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;#filename&#125;</span><br><span class="line">30</span><br><span class="line">[root@vm1 network-scripts]# </span><br><span class="line"></span><br><span class="line">字符串切片操作：$&#123;filename:offset:length&#125;  offset从0开始</span><br><span class="line">[root@vm1 network-scripts]# echo $&#123;filename:5:9&#125;</span><br><span class="line">sysconfig</span><br><span class="line">[root@vm1 network-scripts]#</span><br></pre></td></tr></table></figure>
+<h3 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h3><p>解压文件不保持目录结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">tar命令解压时如何去除目录结构及其解压到指定目录 (--strip-components N)</span><br><span class="line">去除目录结构加上 --strip-components N</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">如： 压缩文件eg.tar 中文件信息为 src/src/src/eg.txt</span><br><span class="line"></span><br><span class="line">运行 tar -xvf eg.tar --strip-components 1</span><br><span class="line"></span><br><span class="line">结果：src/src/eg.txt</span><br><span class="line"></span><br><span class="line">如果运行  tar -xvf eg.tar --strip-components 3</span><br><span class="line"></span><br><span class="line">解压结果为： eg.txt</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">在解压的时候，如果想指定解压目录，可以加参数-C 目标目录</span><br><span class="line"></span><br><span class="line">如： 如我们解压eg.tar, 该文件在/data/src下面，如果需要将基解压到/data/dst目录下面，我们可以在/data/dst目录下，运行 tar -xvf /data/src/eg.tar 也可以在/data/src目录下面运行</span><br><span class="line"></span><br><span class="line">tar -xvf eg.tar -C /data/dst</span><br></pre></td></tr></table></figure></p>
+<h3 id="OS"><a href="#OS" class="headerlink" title="OS"></a>OS</h3><p>Makefile脚本分析</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/shell/"># shell</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/04/20/flask框架开发(精)/">flask开发</a>
+            
+            
+            <a class="next" rel="next" href="/2019/04/10/看雪2019解题(精)/">看雪2019</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

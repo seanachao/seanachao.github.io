@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>DLL注入 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL注入"><span class="toc-text">DLL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取句柄权限"><span class="toc-text">获取句柄权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写入内存"><span class="toc-text">写入内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取LoadLibraryW-API的起始地址"><span class="toc-text">获取LoadLibraryW()API的起始地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建远程线程"><span class="toc-text">创建远程线程</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">DLL注入</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 20, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h2 id="DLL注入"><a href="#DLL注入" class="headerlink" title="DLL注入"></a>DLL注入</h2><p>本周截至到2019.4.5号前，完成DLL注入简单学习</p>
+<h3 id="获取句柄权限"><a href="#获取句柄权限" class="headerlink" title="获取句柄权限"></a>获取句柄权限</h3><hr>
+<p>OpenProcess() API 获取PROCESS_ALL_ACCESS 权限。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">原型</span><br><span class="line">OpenProcess(</span><br><span class="line">    _In_ DWORD dwDesiredAccess,</span><br><span class="line">    _In_ BOOL bInheritHandle,</span><br><span class="line">    _In_ DWORD dwProcessId</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">Handle hprocess = OpenProcess(PROCESS_ALL_ACCESS,FALSE,dwPID);</span><br><span class="line">``` </span><br><span class="line">BInHeritHandle 是 是否让子进程继承当前进程的句柄</span><br><span class="line">dwPID是进程号</span><br><span class="line">### 告知进程DLL路径</span><br><span class="line">---</span><br><span class="line">VirtualAllocEx() API 把即将要加载的DLL路径告知目标进程</span><br><span class="line">```C</span><br><span class="line">VirtualAllocEx(</span><br><span class="line">    _In_ HANDLE hProcess,</span><br><span class="line">    _In_opt_ LPVOID lpAddress,</span><br><span class="line">    _In_ SIZE_T dwSize,</span><br><span class="line">    _In_ DWORD flAllocationType,</span><br><span class="line">    _In_ DWORD flProtect</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></p>
+<p>HANDLE 句柄<br>LPVOID 是一个没有类型的指针，也就是说你可以将LPVOID类型的变量赋值给任意类型的指针，比如在参数传递时就可以把任意类型传递给一个LPVOID类型为参数的方法，然后在方法内再将这个“任意类型”从传递时的“LPVOID类型”转换回来。<br>lpAddress是指定内存开始的地址。<br>dwSize是分配内存的大小。<br>flAllocationType是分配内存的类型。<br>flProtect是访问这块分配内存的权限</p>
+<h3 id="写入内存"><a href="#写入内存" class="headerlink" title="写入内存"></a>写入内存</h3><hr>
+<p>WriteProcessMemory()API<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WriteProcessMemory(</span><br><span class="line">    _In_ HANDLE hProcess,</span><br><span class="line">    _In_ LPVOID lpBaseAddress,</span><br><span class="line">    _In_reads_bytes_(nSize) LPVOID lpBuffer,</span><br><span class="line">    _In_ SIZE_T nSize,</span><br><span class="line">    _Out_opt_ SIZE_T * lpNumberOfBytesWritten</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></p>
+<p>WriteProcessMemory()<br>hProcess 进程 句柄<br>lpBaseAddress VitualAllocEx所得到的的缓冲区的地址(LPVOID)<br>lpBuffer 路径LPVOID<br>nSize 为长度的大小SIZE_T -unsigned int</p>
+<h3 id="获取LoadLibraryW-API的起始地址"><a href="#获取LoadLibraryW-API的起始地址" class="headerlink" title="获取LoadLibraryW()API的起始地址"></a>获取LoadLibraryW()API的起始地址</h3><hr>
+<p>在Windows Vista/7以后的版本中引入了ASLR,附上去除ASLR的工具。每次启动，系统DLL加载的地址都会改变，但是在系统的运行期间它都会被影射到每个进程的相同的地址<strong>意思是其它的应用程序使用相同的DLL时候，在内存中它的位置是一致的 么？？直接使用该DLL???</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HMODULE  hMod = GetModuleHandle(<span class="string">"kernel32.dll"</span>);</span><br><span class="line">pThreadProc = (LPTHREAD_START_ROUTINE)GetProcessAddress(hMod,<span class="string">"LoadLibraryW"</span>);</span><br></pre></td></tr></table></figure></p>
+<p>hMod 载入模块的线性地址- 基地址+偏移<br>“LoadLibraryW” 函数名字</p>
+<h3 id="创建远程线程"><a href="#创建远程线程" class="headerlink" title="创建远程线程"></a>创建远程线程</h3><hr>
+<p>CreateRemoteThread() API<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HANDLE</span><br><span class="line">WINAPI</span><br><span class="line">CreateRemoteThread(</span><br><span class="line">    _In_ HANDLE hProcess,</span><br><span class="line">    _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,</span><br><span class="line">    _In_ SIZE_T dwStackSize,</span><br><span class="line">    _In_ LPTHREAD_START_ROUTINE lpStartAddress,</span><br><span class="line">    _In_opt_ LPVOID lpParameter,</span><br><span class="line">    _In_ DWORD dwCreationFlags,</span><br><span class="line">    _Out_opt_ LPDWORD lpThreadId</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></p>
+<p>hProcess 要注入的进程OpenProcess<br>lpThreadAttributes -&gt; NULL<br>dwStackSize 0<br>lpStartAddress 另起线程的函数地址<br>lpParameter 另起线程的函数的参数地址<br>dwCreationFlags 0<br>lpThreadId NULL</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/reverse/"># reverse</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/03/29/python调试(精)/">python调试</a>
+            
+            
+            <a class="next" rel="next" href="/2019/02/25/python_down（精脚本）/">python 大文件下载</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

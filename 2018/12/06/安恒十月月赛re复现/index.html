@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>安恒十月月赛re复现 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#base"><span class="toc-text">base++</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sub401440函数分析"><span class="toc-text">sub401440函数分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub401170函数"><span class="toc-text">sub401170函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-401100函数"><span class="toc-text">sub_401100函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#easy-tree"><span class="toc-text">easy_tree</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-401794函数"><span class="toc-text">sub_401794函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-40166E函数"><span class="toc-text">sub_40166E函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解题思路"><span class="toc-text">解题思路</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">安恒十月月赛re复现</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 6, 2018&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="base"><a href="#base" class="headerlink" title="base++"></a>base++</h3><hr>
+<p>题目经过IDA后主函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">cdecl <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> **argv, <span class="keyword">const</span> <span class="keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">int</span> v4; <span class="comment">// [esp+30h] [ebp-28h]</span></span><br><span class="line">  <span class="keyword">int</span> v5; <span class="comment">// [esp+34h] [ebp-24h]</span></span><br><span class="line"></span><br><span class="line">  sub_401790(<span class="built_in">std</span>::<span class="built_in">cout</span>, <span class="string">"please input your flag:"</span>);</span><br><span class="line">  sub_4019D0(<span class="built_in">std</span>::<span class="built_in">cin</span>, &amp;unk_405018);</span><br><span class="line">  <span class="keyword">if</span> ( (<span class="keyword">signed</span> <span class="keyword">int</span>)<span class="built_in">strlen</span>((<span class="keyword">const</span> <span class="keyword">char</span> *)&amp;unk_405018) &lt; <span class="number">32</span> )</span><br><span class="line">    <span class="keyword">goto</span> LABEL_14;</span><br><span class="line">  sub_401100((<span class="keyword">const</span> <span class="keyword">char</span> *)&amp;unk_405018);</span><br><span class="line">  v5 = <span class="built_in">strcmp</span>((<span class="keyword">const</span> <span class="keyword">char</span> *)&amp;unk_405018, <span class="string">"guvf_vf_n_snxr_synt_____________"</span>);</span><br><span class="line">  <span class="keyword">if</span> ( v5 )</span><br><span class="line">    v5 = -(v5 &lt; <span class="number">0</span>) | <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( v5 )</span><br><span class="line">  &#123;</span><br><span class="line">LABEL_14:</span><br><span class="line">    sub_401360();</span><br><span class="line">    sub_401440(<span class="built_in">strlen</span>((<span class="keyword">const</span> <span class="keyword">char</span> *)&amp;unk_405018), (<span class="keyword">int</span>)&amp;unk_405018, (<span class="keyword">int</span>)a0);</span><br><span class="line">    v4 = <span class="built_in">strcmp</span>(a0, <span class="string">"TRLT5amLBoLT5Z6Fa5LqN6mkTomqR66Da4LqX5mgBwkkP5wmTZ6D===="</span>);</span><br><span class="line">    <span class="keyword">if</span> ( v4 )</span><br><span class="line">      v4 = -(v4 &lt; <span class="number">0</span>) | <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> ( v4 )</span><br><span class="line">      sub_401790(<span class="built_in">std</span>::<span class="built_in">cout</span>, <span class="string">"soooooooooorry\n"</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      sub_401790(<span class="built_in">std</span>::<span class="built_in">cout</span>, <span class="string">"Congratulations!!!\n"</span>);</span><br><span class="line">    system(<span class="string">"pause"</span>);</span><br><span class="line">    result = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    sub_401790(<span class="built_in">std</span>::<span class="built_in">cout</span>, <span class="string">"try harder!\n"</span>);</span><br><span class="line">    result = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看一下主函数，我们可以发现在<img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base1.png" alt="strcmp">中，当经过strcmp比较后，如果a0的字符串为”TRLT5amLBoLT5Z6Fa5LqN6mkTomqR66Da4LqX5mgBwkkP5wmTZ6D====”，输出Congratulations。在strcmp之上是<strong>sub_401440()</strong>函数</p>
+<h4 id="sub401440函数分析"><a href="#sub401440函数分析" class="headerlink" title="sub401440函数分析"></a>sub401440函数分析</h4><p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base2.png" alt="base2.png"></p>
+<p>a1是输入的字符串的长度，a2是输入的字符串的地址，a3是返回值,分别对应<strong>sub_401440(strlen((const char *)&amp;unk_405018), (int)&amp;unk_405018, (int)a0);</strong>中的strlen((const char *)&amp;unk_405018),&amp;,unk_405018,a0。在进入If判断后，通过循环对输入的字符串进行处理，每次处理的字符串为5位，得到的字符串为8位。跟入<strong>sub401170（）函数</strong></p>
+<h4 id="sub401170函数"><a href="#sub401170函数" class="headerlink" title="sub401170函数"></a>sub401170函数</h4><hr>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base3.png" alt="sub401170"></p>
+<p>在这个函数中，关键的位置为图中标注的两个循环。第一个循环是通过一个数，经过每次移8位倍数来保存处理输入中的五个字符，第二个循环是通过移位5的倍数提取数据。每次将得到的数，取后五位作为下标，得到byte_40507c数组中相应下标的值。这一部分对应的re脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(flag_int)/<span class="number">8</span>):</span><br><span class="line">	m = <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">8</span>):</span><br><span class="line">		loc = i*<span class="number">8</span> + j</span><br><span class="line">		<span class="keyword">if</span> flag_int[loc] != <span class="number">-1</span>:</span><br><span class="line">			m = m + (flag_int[loc] &lt;&lt; (<span class="number">5</span>*(<span class="number">7</span>-j)) )</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">5</span>):</span><br><span class="line">		letter = ( m &gt;&gt; (<span class="number">8</span>*(<span class="number">4</span>-j))) &amp; <span class="number">0xff</span></span><br><span class="line">		flag.append(chr(letter))</span><br><span class="line">flag_str = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> flag:</span><br><span class="line">	flag_str = flag_str + i </span><br><span class="line"><span class="keyword">print</span> flag_str</span><br></pre></td></tr></table></figure>
+<p>在这里注意一个坑，”&gt;&gt;” 操作符的运算顺序是最后最后的，要注意 !!!</p>
+<p>接下来，直接查看byte_40507c数组可以得到其值，但是在开始的时候，byte_40507c数组的值有初始赋值操作。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base4.png" alt=""></p>
+<h4 id="sub-401100函数"><a href="#sub-401100函数" class="headerlink" title="sub_401100函数"></a>sub_401100函数</h4><hr>
+<p>在<strong>sub_401100(byte_40507c)</strong>中对数组byte_40507c进行了初始化的操作，对顺序进行了变换。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base5.png" alt=""></p>
+<p>对应的转换代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">byte_40507C = range(<span class="number">0x41</span>,<span class="number">0x41</span>+<span class="number">26</span>)</span><br><span class="line">byte_letter = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> byte_40507C:</span><br><span class="line">	byte_letter.append(i)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">int_to_char</span><span class="params">(a)</span>:</span></span><br><span class="line">	b = []</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> a:</span><br><span class="line">		b.append(chr(i))</span><br><span class="line">	<span class="keyword">return</span> b</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translate_str</span><span class="params">(byte_letter)</span>:</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(byte_letter)):</span><br><span class="line">		v3 = byte_letter[i]</span><br><span class="line">		<span class="keyword">if</span> (v3 - <span class="number">97</span>) &lt;= <span class="number">0x19</span>:</span><br><span class="line">			byte_letter[i] = (v3 - <span class="number">84</span>) % <span class="number">26</span> + <span class="number">97</span>;</span><br><span class="line">		<span class="keyword">if</span> (v3 - <span class="number">65</span>) &lt;= <span class="number">0x19</span>:</span><br><span class="line">			byte_letter[i] = (v3 - <span class="number">52</span>)% <span class="number">26</span> + <span class="number">65</span>;</span><br><span class="line">	<span class="keyword">return</span> byte_letter</span><br><span class="line"><span class="keyword">print</span> <span class="string">"letter"</span>,translate_str(byte_letter)</span><br><span class="line">byte_letter_2 = translate_str(byte_letter)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(byte_letter_2)):</span><br><span class="line">	<span class="keyword">if</span> i % <span class="number">2</span> == <span class="number">1</span>:</span><br><span class="line">		byte_letter_2[i] += <span class="number">32</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">55</span>,<span class="number">49</span>,<span class="number">-1</span>):</span><br><span class="line">		byte_letter_2.append(i)</span><br><span class="line">encry_str = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> byte_letter_2:</span><br><span class="line">	encry_str += chr(i)</span><br><span class="line"><span class="comment">#key = encry_str</span></span><br><span class="line">key = int_to_char(byte_letter_2)</span><br></pre></td></tr></table></figure>
+<p>可以得到转换的字符串”NoPqRsTuVwXyZaBcDeFgHiJkLm765432”,通过比对”TRLT5amLBoLT5Z6Fa5LqN6mkTomqR66Da4LqX5mgBwkkP5wmTZ6D====”可以得到字符数组byte_40507c数组下标的排列顺序。而该下标中存储的就是变换前某步处理后的字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> output_str:</span><br><span class="line">	<span class="keyword">if</span> i != <span class="string">'='</span> :</span><br><span class="line">	</span><br><span class="line">		m1 = key.index(i)</span><br><span class="line">		flag_int.append(m1)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		flag_int.append(<span class="number">-1</span>)</span><br></pre></td></tr></table></figure>
+<p>这样我们就得到了下标的正确顺序值。再通过解密还原得到”10n78ppn3ro00o70r2opop5s3roqq937”，但是输入后得到的依旧是sooooooooooory….因为我们输入的字符长度为32为，不能直接goto label14</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//base6.png" alt="base6"></p>
+<p>还是经过<strong>sub401100()</strong>函数处理。对应的转换代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">byte_letter_l = range(<span class="number">96</span>,<span class="number">96</span>+<span class="number">26</span>)</span><br><span class="line">trans_init = int_to_char(translate_str(byte_letter_l))<span class="comment">##函数在上文中</span></span><br><span class="line">dict_letter = &#123;&#125;</span><br><span class="line">j  = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">96</span>,<span class="number">96</span>+<span class="number">26</span>):</span><br><span class="line">	dict_letter[trans_init[j]] = i</span><br><span class="line">	j = j + <span class="number">1</span></span><br><span class="line">flag_new = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(flag)):</span><br><span class="line">	<span class="keyword">if</span> flag[i] &lt;= <span class="string">'z'</span> <span class="keyword">and</span> flag[i] &gt;= <span class="string">'a'</span>:</span><br><span class="line">		flag_new.append(dict_letter[flag[i]])</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		flag_new.append(ord(flag[i]))</span><br><span class="line">flag_str = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> flag_new:</span><br><span class="line">	flag_str += chr(i)</span><br><span class="line"><span class="keyword">print</span> flag_str</span><br></pre></td></tr></table></figure>
+<p>可以得到最终的flag <strong>10a78cca3eb00b70e2bcbc5f3ebdd937</strong></p>
+<h3 id="easy-tree"><a href="#easy-tree" class="headerlink" title="easy_tree"></a>easy_tree</h3><hr>
+<p>经过查壳后发现是UPX壳，脱壳机直接脱掉壳后，经过IDA,F5后，程序逻辑依旧很清晰。经过strncmp后输出well done。就可以得到FLAG。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//easy_tree.png" alt=""></p>
+<p>v3的字符串经过<strong>sub_401794(&amp;v6)</strong>函数得到，这个函数是base64加密函数。</p>
+<h4 id="sub-401794函数"><a href="#sub-401794函数" class="headerlink" title="sub_401794函数"></a>sub_401794函数</h4><hr>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//easy_tree1.png" alt=""></p>
+<p>在<strong>aAbcdefghijklmn db ‘ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/‘</strong>处发现该字符串，猜测可能是base64加密，再通过v4 += 3 v5 += 4大致符合base64加密。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">print</span> base64.b64decode(<span class="string">"aWNuZXJyc2VhZXRydmVl"</span>)</span><br></pre></td></tr></table></figure>
+<p>得到字符串”icnerrseaetrvee”,这个时候再考虑<strong>sub_40166E(v8, v9, (int)&amp;v6)</strong>函数</p>
+<h4 id="sub-40166E函数"><a href="#sub-40166E函数" class="headerlink" title="sub_40166E函数"></a>sub_40166E函数</h4><hr>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//easy_tree2.png" alt=""></p>
+<p>三个参数的解析 a1 是地址,a2是第几个数，a3是复制后的地址。在第一个参数a1的传值的过程中分别是后来的*(a1+4),*(a1+8)，传入的分别是左右儿子节点的地址。</p>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><hr>
+<p>根据字符串长度，结合动态调试,比如断点设置在mov [edx],al处，通过输入不同的字符，观察每次输入的字符，后来的访问来判断树的建立，发现是满二叉树，可以得到最终的答案icanreversetree。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//easy_tree4.png" alt=""></p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/01/07/逆向笔记(精)/">逆向笔记</a>
+            
+            
+            <a class="next" rel="next" href="/2018/12/05/安恒九月赛re复现/">安恒九月月赛re复现</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

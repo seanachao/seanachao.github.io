@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>NCTF reverse部分题解 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本操作-Reverse-Version"><span class="toc-text">基本操作 ~Reverse Version.~</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Some-Boxes"><span class="toc-text">Some Boxes</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Our-16bit-wars"><span class="toc-text">Our 16bit wars</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#后门后门后门"><span class="toc-text">后门后门后门</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">NCTF reverse部分题解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 25, 2018&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <p>抱着玩的心态，玩中看了几道题目，本来也想着看看XNUCA的题目的，无奈没有报上名。NCTF划划水….</p>
+<h4 id="基本操作-Reverse-Version"><a href="#基本操作-Reverse-Version" class="headerlink" title="基本操作 ~Reverse Version.~"></a>基本操作 ~Reverse Version.~</h4><hr>
+<p>elf64位，直接扔到IDA中，F5后，代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">__int64 __<span class="function">fastcall <span class="title">main</span><span class="params">(__int64 a1, <span class="keyword">char</span> **a2, <span class="keyword">char</span> **a3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"Input flag:"</span>);</span><br><span class="line">  __isoc99_scanf(<span class="string">"%64s"</span>, byte_601100);</span><br><span class="line">  dword_601064 = <span class="number">0</span>;</span><br><span class="line">  sub_400666(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> ( !<span class="built_in">strcmp</span>(&amp;s1, <span class="string">"bcec8d7dcda25d91ed3e0b720cbb6cf202b09fedbc3e017774273ef5d5581794"</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">memset</span>(&amp;s1, <span class="number">0</span>, <span class="number">0x80</span>uLL);</span><br><span class="line">    dword_601064 = <span class="number">0</span>;</span><br><span class="line">    sub_4006BE(<span class="number">0</span>, <span class="number">0L</span>L);</span><br><span class="line">    <span class="keyword">if</span> ( !<span class="built_in">strcmp</span>(&amp;s1, <span class="string">"7d8dcdcaed592e1dcb07e02c36bcb2f0bf9e0bdcb0e13777237e25fd48515974"</span>) )</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"TQL! TQL! flag: nctf&#123;%s&#125;\n"</span>, byte_601100);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      <span class="built_in">puts</span>(<span class="string">"Emmmm....."</span>);</span><br><span class="line">    result = <span class="number">0L</span>L;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"GG!"</span>);</span><br><span class="line">    result = <span class="number">0L</span>L;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>做了两处strcmp，其中地址s1的字符分别在函数sub_40666(0)和sub_4006BE(0, 0LL)中进行了赋值。进入sub_40666(0)中,通过递归对s1进行赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">__int64 __<span class="function">fastcall <span class="title">sub_400666</span><span class="params">(<span class="keyword">signed</span> <span class="keyword">int</span> a1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> v1; <span class="comment">// eax</span></span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ( a1 &lt;= <span class="number">63</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v1 = dword_601064++;</span><br><span class="line">    *(&amp;s1 + v1) = byte_601100[a1];</span><br><span class="line">    sub_400666((<span class="keyword">unsigned</span> <span class="keyword">int</span>)(<span class="number">2</span> * a1 + <span class="number">1</span>));</span><br><span class="line">    result = sub_400666((<span class="keyword">unsigned</span> <span class="keyword">int</span>)(<span class="number">2</span> * (a1 + <span class="number">1</span>)));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过递归依次对s1[0],s1[1],s1[2]….进行赋值，其值byte_601100[a1],逆向可以得到输入的字符byte_601100[a1]的值应该依次为s1[0],s1[1],s1[2],编写解题脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">string_one = list(<span class="string">"bcec8d7dcda25d91ed3e0b720cbb6cf202b09fedbc3e017774273ef5d5581794"</span>)</span><br><span class="line">string_flag = list(<span class="string">"bcec8d7dcda25d91ed3e0b720cbb6cf202b09fedbc3e017774273ef5d5581794"</span>)</span><br><span class="line">z= [<span class="number">0</span>]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span><span class="params">( a)</span>:</span></span><br><span class="line">	<span class="keyword">if</span> (a&lt;=<span class="number">63</span>):</span><br><span class="line">		<span class="comment">#print z[0],a</span></span><br><span class="line">		string_flag[a] = string_one[z[<span class="number">0</span>]]//核心部分</span><br><span class="line">		z[<span class="number">0</span>] = z[<span class="number">0</span>] + <span class="number">1</span></span><br><span class="line">		func1(<span class="number">2</span>*a+<span class="number">1</span>)</span><br><span class="line">		func1(<span class="number">2</span>*(a+<span class="number">1</span>))</span><br><span class="line"><span class="keyword">print</span> <span class="string">"*"</span>*<span class="number">30</span></span><br><span class="line">func1(<span class="number">0</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"#"</span>*<span class="number">30</span></span><br><span class="line">flag = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> string_flag:</span><br><span class="line">	flag = flag + i</span><br><span class="line"><span class="keyword">print</span> flag</span><br></pre></td></tr></table></figure>
+<p><strong><em>FLAG:nctf{bc2e3b4c2eb03258c5102bf9de77f57dddad9edb70c6c20febc01773e5d81947}</em></strong></p>
+<h4 id="Some-Boxes"><a href="#Some-Boxes" class="headerlink" title="Some Boxes"></a>Some Boxes</h4><hr>
+<p>这个题目看了真的是好久,刚刚看到四步操作如下,以为是地图题目</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( v3 == <span class="number">52</span> )                             <span class="comment">// 4</span></span><br><span class="line">    &#123;</span><br><span class="line">      subfunc1_400C62_Left();</span><br><span class="line">      <span class="keyword">goto</span> LABEL_14;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ( v3 &gt; <span class="number">52</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v3 == <span class="number">53</span> )                           <span class="comment">// 5</span></span><br><span class="line">      &#123;</span><br><span class="line">        subfunc2_400D5DDOWN();</span><br><span class="line">        <span class="keyword">goto</span> LABEL_14;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ( v3 == <span class="number">87</span> )                           <span class="comment">// W</span></span><br><span class="line">      &#123;</span><br><span class="line">        subfunc3_400B67UP();</span><br><span class="line">        <span class="keyword">goto</span> LABEL_14;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( v3 == <span class="number">48</span> )</span><br><span class="line">    &#123;                                           <span class="comment">// 0</span></span><br><span class="line">      subfunc4_400A6CRIGHT_right();</span><br><span class="line">      <span class="keyword">goto</span> LABEL_14;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>跟进函数后发现:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result = (<span class="keyword">unsigned</span> __int8)byte_6020A0[<span class="number">16</span> * dword5_6021B4_poi_col - <span class="number">1</span> + dword80_6021B0_poi_line];</span><br></pre></td></tr></table></figure>
+<p>跟到byte_6020A0以为发现了新大陆，但是提取数据后长这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  8   9  10  11  12  13  14  15   0   1   2   3   4   5   6   7          16 </span><br><span class="line"> 24  25  18  19  28  29  30  31  16  17  18  19  28  29  22  23          32 </span><br><span class="line"> 40  41  34  35  36  37  38  47  40  41  42  43  44  45  38  39          48 </span><br><span class="line"> 56  57  50  59  60  53  54  55  56  57  50  51  52  61  62  55          64 </span><br><span class="line"> 72  73  66  75  76  69  78  79  72  73  66  95  76  77  78  71          80 </span><br><span class="line"> 88  89  82  83  92  85  86  87  88  89  82  83  84  85  86  87          96 </span><br><span class="line">104 105  98  99 108 109 110 111 104  97  98  99 100 101 102 103          112 </span><br><span class="line">120 121 114 123 124 125 126 127 120 113 114 123 124 125 118 119          128 </span><br><span class="line">136 129 130 139 144 141 134 143 136 137 138 139 132 141 134 135          144 </span><br><span class="line">152 145 146 147 148 149 150 151 152 145 146 147 148 157 150 151          160 </span><br><span class="line">168 161 162 163 164 173 174 175 168 161 170 171 172 173 166 167          176 </span><br><span class="line">184 185 186 187 188 189 190 191 176 177 178 179 180 181 182 183          192</span><br></pre></td></tr></table></figure>
+<p>这也不是地图啊,各种揪心中，然后函数中不是简单的++ – 各种操作，这都是什么!!!而且都是在和8做比较，地图里哪有那么多8。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 向左移动</span></span><br><span class="line">__<span class="function">int64 <span class="title">subfunc1_400C62_Left</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  __int64 result; <span class="comment">// rax dword80_6021B0</span></span><br><span class="line"></span><br><span class="line">  result = (<span class="keyword">unsigned</span> __int8)byte_6020A0[<span class="number">16</span> * dword5_6021B4_poi_col - <span class="number">1</span> + dword80_6021B0_poi_line];<span class="comment">// 先获取其左侧点，无效操作</span></span><br><span class="line">  <span class="keyword">if</span> ( (_BYTE)result != <span class="number">8</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( dword80_6021B0_poi_line - <span class="number">1</span> != dword5_6021D8_one || dword5_6021B4_poi_col != dword2_6021DC_one )<span class="comment">// 先和第一个点做比较，碰不到第一个点</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( dword80_6021B0_poi_line - <span class="number">1</span> == dword8_6021D0_three &amp;&amp; dword5_6021B4_poi_col == dword7_6021D4_three )<span class="comment">// 碰到第三个点</span></span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( byte_6020A0[<span class="number">16</span> * dword7_6021D4_three - <span class="number">1</span> + dword8_6021D0_three] == <span class="number">8</span> )<span class="comment">// 第三个点左移动碰到8</span></span><br><span class="line">          ++dword80_6021B0_poi_line;            <span class="comment">// 指示点向右移动</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          sub_400A1C(&amp;dword8_6021D0_three);     <span class="comment">// 否则向左移动第三个点</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( byte_6020A0[<span class="number">16</span> * dword2_6021DC_one - <span class="number">1</span> + dword5_6021D8_one] == <span class="number">8</span> )<span class="comment">// 第一个点向左移动是8</span></span><br><span class="line">    &#123;</span><br><span class="line">      ++dword80_6021B0_poi_line;                <span class="comment">// 指示点向右移动</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      sub_400A1C(&amp;dword5_6021D8_one);           <span class="comment">// 第一个点左边一个点不是8，且指示点左边第一个点行列均不碰第一个点</span></span><br><span class="line">    &#125;</span><br><span class="line">    result = (<span class="keyword">unsigned</span> <span class="keyword">int</span>)(dword80_6021B0_poi_line-- - <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看程序对byte_6020A0的操作发现存在写操作，跟入，发现一个init函数中但是要修复栈帧后(要在报错的上一行ALT+K),后发现原来真正的地图要运行后才能得到。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">sub_400EB9</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">signed</span> <span class="keyword">int</span> i; <span class="comment">// [rsp+0h] [rbp-4h]</span></span><br><span class="line">  <span class="keyword">void</span> *retaddr; <span class="comment">// [rsp+Ch] [rbp+8h]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt;= <span class="number">191</span>; ++i )</span><br><span class="line">    byte_6020A0[i] ^= i;</span><br><span class="line">  <span class="keyword">return</span> retaddr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>经过提取数据后得到地图,这才是真正的地图嘛。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  </span><br><span class="line">8   8   8   8   8   8   8   8   8   8   8   8   8   8   8   8          16 </span><br><span class="line">8   8   0   0   8   8   8   8   8   8   8   8   0   0   8   8          32 </span><br><span class="line">8   8   0   0   0   0   0   8   0   0   0   0   0   0   8   8          48 </span><br><span class="line">8   8   0   8   8   0   0   0   0   0   8   8   8   0   0   8          64 </span><br><span class="line">8   8   0   8   8   0   8   8   0   0   8  20   0   0   0   8          80 </span><br><span class="line">8   8   0   0   8   0   0   0   0   0   8   8   8   8   8   8          96 </span><br><span class="line">8   8   0   0   8   8   8   8   0   8   8   8   8   8   8   8          112 </span><br><span class="line">8   8   0   8   8   8   8   8   0   8   8   0   0   0   8   8          128 </span><br><span class="line">8   0   0   8  20   8   0   8   0   0   0   0   8   0   8   8          144 </span><br><span class="line">8   0   0   0   0   0   0   0   0   8   8   8   8   0   8   8          160 </span><br><span class="line">8   0   0   0   0   8   8   8   0   8   0   0   0   0   8   8          176 </span><br><span class="line">8   8   8   8   8   8   8   8   8   8   8   8   8   8   8   8          192</span><br></pre></td></tr></table></figure>
+<p>然后通过最后的输出函数中的两个关键等式定位两个关键点，也就是在起始位置为37和120的两个点最后的位置处要等于20才能输出FLAG，而我们通过主函数可以确定最开始的起始点是88</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result = (<span class="keyword">unsigned</span> __int8)byte_6020A0[<span class="number">16</span> * dword2_6021DC_one + dword5_6021D8_one];<span class="comment">// res[37]的位置，起始值为37</span></span><br><span class="line">result = (<span class="keyword">unsigned</span> __int8)byte_6020A0[<span class="number">16</span> * dword7_6021D4_three + dword8_6021D0_three];<span class="comment">// 120起始的位置，起始的值为120</span></span><br></pre></td></tr></table></figure>
+<p>一开始以为是该起始点带着其它的两个点，依次将他们送入最后的位置处，但是…error! error!再重新回到程序分析发现起始的标准点和其它的两个点根本不会相遇，而是推着他们走。再联想题目Some Box 。推箱子没问题了。按照题目要求，推一下箱子吧,手动玩游戏,得到最后的FLAG</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: <span class="number">444</span>WW0W444W45555555450050W0000WWWWW5444WW00050W4W0000W0550544</span><br><span class="line">NCTF&#123;<span class="number">6</span>a229b5df4b8e8109a38c13ceaebc90ec3953055a4dcaf602fa7f08a39491bca&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Our-16bit-wars"><a href="#Our-16bit-wars" class="headerlink" title="Our 16bit wars"></a>Our 16bit wars</h4><hr>
+<p>16位的汇编代码，反编译不存在的。一遍看INT 21h一遍解析代码,程序流程如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">显示提示</span><br><span class="line">接受输入</span><br><span class="line">右移</span><br><span class="line">左移</span><br><span class="line">异或</span><br><span class="line">判断</span><br><span class="line">输出</span><br></pre></td></tr></table></figure>
+<p>程序中主要的核心部分</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">seg001:0059 sub_100F9       proc near               ; CODE XREF: sub_100AC+1A↑p</span><br><span class="line">seg001:0059                 mov     bx, di</span><br><span class="line">seg001:005B                 mov     si, 0</span><br><span class="line">seg001:005E</span><br><span class="line">seg001:005E loc_100FE:                              ; CODE XREF: sub_100F9+19↓j</span><br><span class="line">seg001:005E                 mov     al, [bx+si]     ; a[1+i]</span><br><span class="line">seg001:0060                 mov     dl, al          ; b[1+i]=a[1+i]</span><br><span class="line">seg001:0062                 mov     cl, 3</span><br><span class="line">seg001:0064                 shr     al, cl          ; a[1+i]=a[1+i]&gt;&gt;3</span><br><span class="line">seg001:0066                 mov     cl, 5</span><br><span class="line">seg001:0068                 shl     dl, cl          ; b[1+i]=b[1+i]&lt;&lt;5</span><br><span class="line">seg001:006A                 xor     al, dl          ; a[1+i]=a[1+i]^b[1+i]</span><br><span class="line">seg001:006C                 mov     [bx+si], al     ; a[1+i]=a[1+i]</span><br><span class="line">seg001:006E                 inc     si</span><br><span class="line">seg001:006F                 cmp     si, 23h ; &apos;#&apos;</span><br><span class="line">seg001:0072                 jnz     short loc_100FE ; a[1+i]</span><br><span class="line">seg001:0074                 retn</span><br><span class="line">seg001:0074 sub_100F9       endp</span><br></pre></td></tr></table></figure>
+<p>我们可以得指程序做的操作如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (int i=0;i&lt;0x23;i++)&#123;</span><br><span class="line">    b[1+i]=a[1+i];</span><br><span class="line">    a[1+i]=a[1+i]&gt;&gt;3;</span><br><span class="line">    b[1+i]=b[1+i]&lt;&lt;5;</span><br><span class="line">    a[1+i]=a[1+i]^b[1+i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看最后的比较函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">seg001:0044 sub_100E4       proc near               ; CODE XREF: sub_100AC+23↑p</span><br><span class="line">seg001:0044                 xor     bx, bx</span><br><span class="line">seg001:0046</span><br><span class="line">seg001:0046 loc_100E6:                              ; CODE XREF: sub_100E4+B↓j</span><br><span class="line">seg001:0046                 mov     al, [bx+si]      ;si 在76h处</span><br><span class="line">seg001:0048                 cmp     al, [bx+di]     ; 输入处的字符串</span><br><span class="line">seg001:004A                 jnz     short loc_100F5</span><br><span class="line">seg001:004C                 inc     bx</span><br><span class="line">seg001:004D                 cmp     bx, dx</span><br><span class="line">seg001:004F                 jnz     short loc_100E6</span><br><span class="line">seg001:0051                 mov     ax, 0</span><br><span class="line">seg001:0054                 retn</span><br><span class="line">seg001:0055 ; ---------------------------------------------------------------------------</span><br><span class="line">seg001:0055</span><br><span class="line">seg001:0055 loc_100F5:                              ; CODE XREF: sub_100E4+6↑j</span><br><span class="line">seg001:0055                 mov     ax, 1</span><br><span class="line">seg001:0058                 retn</span><br><span class="line">seg001:0058 sub_100E4       endp</span><br></pre></td></tr></table></figure>
+<p>提取出做比较的字符串后，解题脚本如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> z3 <span class="keyword">import</span> *</span><br><span class="line">res = [<span class="number">201</span>, <span class="number">104</span>, <span class="number">138</span>, <span class="number">200</span>, <span class="number">111</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">15</span>, <span class="number">7</span>, <span class="number">198</span>, <span class="number">235</span>, <span class="number">134</span>, <span class="number">110</span>, <span class="number">110</span>, <span class="number">102</span>, <span class="number">173</span>, <span class="number">76</span>, <span class="number">141</span>, <span class="number">172</span>, <span class="number">235</span>, <span class="number">38</span>, <span class="number">110</span>, <span class="number">235</span>, <span class="number">204</span>, <span class="number">174</span>, <span class="number">205</span>, <span class="number">140</span>, <span class="number">134</span>, <span class="number">173</span>, <span class="number">102</span>, <span class="number">205</span>, <span class="number">142</span>, <span class="number">134</span>, <span class="number">141</span>, <span class="number">175</span>]</span><br><span class="line"></span><br><span class="line">flag = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">35</span>):</span><br><span class="line"></span><br><span class="line">	ans = BitVec(<span class="string">'ans'</span>,<span class="number">8</span>)</span><br><span class="line">	rev = Solver()</span><br><span class="line">	rev.add((ans&gt;&gt;<span class="number">3</span>)^(ans&lt;&lt;<span class="number">5</span>)==res[i])</span><br><span class="line">	<span class="keyword">print</span> rev.check()</span><br><span class="line">	<span class="keyword">print</span> rev.model()</span><br><span class="line">	flag.append(rev.model())</span><br><span class="line"><span class="keyword">print</span> flag</span><br><span class="line">res_flat = <span class="string">""</span></span><br><span class="line">flag = [<span class="number">78</span>,<span class="number">67</span>,<span class="number">84</span>,<span class="number">70</span>,<span class="number">123</span>,<span class="number">56</span>,<span class="number">48</span>,<span class="number">120</span>,<span class="number">56</span>,<span class="number">54</span>,<span class="number">95</span>,<span class="number">52</span>,<span class="number">115</span>,<span class="number">115</span>,<span class="number">51</span>,<span class="number">109</span>,<span class="number">98</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">95</span>,<span class="number">49</span>,<span class="number">115</span>,<span class="number">95</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">100</span>,<span class="number">52</span>,<span class="number">109</span>,<span class="number">51</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">52</span>,<span class="number">108</span>,<span class="number">125</span>]</span><br><span class="line"><span class="keyword">print</span> len(flag)</span><br><span class="line"><span class="keyword">for</span>  i <span class="keyword">in</span> flag:</span><br><span class="line">	res_flat = res_flat + chr(i)</span><br><span class="line"><span class="keyword">print</span> res_flat</span><br></pre></td></tr></table></figure>
+<p><strong><em>flag: NCTF{80x86_4ss3mble_1s_fund4m3nt4l}</em></strong></p>
+<h4 id="后门后门后门"><a href="#后门后门后门" class="headerlink" title="后门后门后门"></a>后门后门后门</h4><p>IDA经过F5反编译后，直接进入flag函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">cdecl <span class="title">hereisyourflag</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> flagenc[<span class="number">32</span>]; <span class="comment">// [rsp+20h] [rbp-30h]</span></span><br><span class="line">  <span class="keyword">int</span> i; <span class="comment">// [rsp+4Ch] [rbp-4h]</span></span><br><span class="line"></span><br><span class="line">  flagenc[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  flagenc[<span class="number">1</span>] = <span class="number">125</span>;</span><br><span class="line">  flagenc[<span class="number">2</span>] = <span class="number">100</span>;</span><br><span class="line">  flagenc[<span class="number">3</span>] = <span class="number">108</span>;</span><br><span class="line">  flagenc[<span class="number">4</span>] = <span class="number">114</span>;</span><br><span class="line">  flagenc[<span class="number">5</span>] = <span class="number">111</span>;</span><br><span class="line">  flagenc[<span class="number">6</span>] = <span class="number">119</span>;</span><br><span class="line">  flagenc[<span class="number">7</span>] = <span class="number">95</span>;</span><br><span class="line">  flagenc[<span class="number">8</span>] = <span class="number">115</span>;</span><br><span class="line">  flagenc[<span class="number">9</span>] = <span class="number">39</span>;</span><br><span class="line">  flagenc[<span class="number">10</span>] = <span class="number">121</span>;</span><br><span class="line">  flagenc[<span class="number">11</span>] = <span class="number">114</span>;</span><br><span class="line">  flagenc[<span class="number">12</span>] = <span class="number">97</span>;</span><br><span class="line">  flagenc[<span class="number">13</span>] = <span class="number">110</span>;</span><br><span class="line">  flagenc[<span class="number">14</span>] = <span class="number">105</span>;</span><br><span class="line">  flagenc[<span class="number">15</span>] = <span class="number">98</span>;</span><br><span class="line">  flagenc[<span class="number">16</span>] = <span class="number">95</span>;</span><br><span class="line">  flagenc[<span class="number">17</span>] = <span class="number">111</span>;</span><br><span class="line">  flagenc[<span class="number">18</span>] = <span class="number">116</span>;</span><br><span class="line">  flagenc[<span class="number">19</span>] = <span class="number">95</span>;</span><br><span class="line">  flagenc[<span class="number">20</span>] = <span class="number">101</span>;</span><br><span class="line">  flagenc[<span class="number">21</span>] = <span class="number">109</span>;</span><br><span class="line">  flagenc[<span class="number">22</span>] = <span class="number">111</span>;</span><br><span class="line">  flagenc[<span class="number">23</span>] = <span class="number">99</span>;</span><br><span class="line">  flagenc[<span class="number">24</span>] = <span class="number">108</span>;</span><br><span class="line">  flagenc[<span class="number">25</span>] = <span class="number">101</span>;</span><br><span class="line">  flagenc[<span class="number">26</span>] = <span class="number">87</span>;</span><br><span class="line">  flagenc[<span class="number">27</span>] = <span class="number">123</span>;</span><br><span class="line">  flagenc[<span class="number">28</span>] = <span class="number">102</span>;</span><br><span class="line">  flagenc[<span class="number">29</span>] = <span class="number">116</span>;</span><br><span class="line">  flagenc[<span class="number">30</span>] = <span class="number">99</span>;</span><br><span class="line">  flagenc[<span class="number">31</span>] = <span class="number">110</span>;</span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt;= <span class="number">15</span>; ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    flagenc[i] ^= flagenc[<span class="number">31</span> - i];</span><br><span class="line">    flagenc[<span class="number">31</span> - i] ^= flagenc[i];</span><br><span class="line">    flagenc[i] ^= flagenc[<span class="number">31</span> - i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"here is your real flag:%s\n"</span>, flagenc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本机运行即可得到FLAG</p>
+<hr>
+<p>感谢NCTF出题的师傅们，玩的很开心.</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/11/29/湖湘杯re题目复现/">湖湘杯replace题目复现</a>
+            
+            
+            <a class="next" rel="next" href="/2018/11/25/angr学习/">angr学习</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>安恒九月月赛re复现 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#题目分析"><span class="toc-text">题目分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逆向分析"><span class="toc-text">逆向分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-401000函数"><span class="toc-text">sub_401000函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-4010E0函数分析"><span class="toc-text">sub_4010E0函数分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-401160函数"><span class="toc-text">sub_401160函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">安恒九月月赛re复现</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 5, 2018&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h4 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h4><hr>
+<p>首先查壳后发现没有壳，直接使用IDA打开，但是使用F5反编译的时候，出现栈帧报错，使用ALT+K修复一下，然后直接F5得到主函数结构如下</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver1.png" alt="main"></p>
+<p>分析主流程:</p>
+<ul>
+<li>输入字符</li>
+<li>判断字符长度</li>
+<li>经过sub_401160函数处理</li>
+<li>经过sub_401000函数处理</li>
+<li>经过sub_4010E0函数处理</li>
+<li>和最终的byte_402104数组比对，如果不一致就exit，否则最后输出Congratulation。</li>
+</ul>
+<h4 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h4><hr>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver2.png" alt=""></p>
+<p>输入的字符串经过一系列变化后，与byte_402104处的代码进行比较，如果一致则成功,提取byte_402104数组的值，长度大小为44位。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">start_address  = <span class="number">0x00402104</span></span><br><span class="line">finall_str = []</span><br><span class="line"><span class="keyword">print</span> <span class="string">"start"</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(start_address,start_address+<span class="number">44</span>):</span><br><span class="line">	finall_str.append(Byte(i))</span><br><span class="line"><span class="keyword">print</span> finall_str</span><br></pre></td></tr></table></figure>
+<p>接下来我们来看对字符串进行的变换操作,依次经过sub_401160、sub_401100、sub_4011E0三个函数，在sub_4010E0函数中，对v3输入字符串的操作依赖于v7故我们先分析sub_401000函数</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver3.png" alt=""></p>
+<h4 id="sub-401000函数"><a href="#sub-401000函数" class="headerlink" title="sub_401000函数"></a>sub_401000函数</h4><hr>
+<p>输入，输出，长度</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver4.png" alt="sub_401000(&amp;v7, (int)&amp;v9, strlen(&amp;v9))"></p>
+<p>经过以上代码后，在a1处得到的是01 02 03 …FF。而在*v6所指向的位置是flag{this_is_not_the_flag_hahaha}的循环直到256个字符。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver5.png" alt="sub_401000(&amp;v7, (int)&amp;v9, strlen(&amp;v9))"></p>
+<p>算法分析(KSA)：</p>
+<ul>
+<li>两组字符串，每组是256个字符串，分别命名为a[],b[],下标值v3初始为0</li>
+<li>接下来的操作循环256次</li>
+<li>依次取a[],b[]中对应位置的字符，下标v3,三者相加后取余数256后得到新的v3值,交换a[v3]和b[v3]的值</li>
+<li>得到最后的字符串</li>
+</ul>
+<p>这里是进行swap()操作，最后在38行给a1赋值。这里每次的a1的值也就是传入的v7的值最后的结果是固定的，我们通过动态调试得到如下数据：</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver6.png" alt=""></p>
+<p>经过数据处理:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fi = open(<span class="string">"new.txt"</span>,<span class="string">'r'</span>)</span><br><span class="line">data = fi.readline()</span><br><span class="line">res = []</span><br><span class="line"><span class="keyword">while</span> data:</span><br><span class="line">	data = data.split()</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">17</span>):</span><br><span class="line">		m = int(data[i],<span class="number">16</span>)</span><br><span class="line">		res.append(m)</span><br><span class="line">	data = fi.readline()</span><br><span class="line"><span class="keyword">print</span> len(res)</span><br><span class="line">fi.close()</span><br></pre></td></tr></table></figure>
+<p>得到v7的初始的值。</p>
+<h4 id="sub-4010E0函数分析"><a href="#sub-4010E0函数分析" class="headerlink" title="sub_4010E0函数分析"></a>sub_4010E0函数分析</h4><hr>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver7.png" alt="sub_4010E0((int)&amp;v7, (int)v3, strlen(v3));"></p>
+<p>算法分析(PRGA):</p>
+<ul>
+<li>result是传入的密钥流，v6的指向是密钥流中的每个字符，v4是每个字符和v4相加后取余的结果</li>
+<li>对于明文a2,循环其长度a3次，每次与某一指定字节，文中红线部分，做异或。</li>
+</ul>
+<p>在这一步中关键点是红线部分的值，通过代码改写，可以发现红线部分的值是定值，那么我们再异或一次就可以得到初始的字符串了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">v3 = <span class="number">0</span></span><br><span class="line">v4 = <span class="number">0</span></span><br><span class="line">v5 = <span class="number">0</span></span><br><span class="line">value_or = []</span><br><span class="line"><span class="keyword">while</span> v5 &lt;= <span class="number">43</span>:</span><br><span class="line">	v3 = ( v3 + <span class="number">1</span> ) % <span class="number">256</span></span><br><span class="line">	v6 = res[v3]</span><br><span class="line">	v4 = ( v6 + v4 ) % <span class="number">256</span></span><br><span class="line">	res[v3] = res[v4]</span><br><span class="line">	res[v4] = v6</span><br><span class="line">	m = res[(v6 + res[v3]) % <span class="number">256</span>]</span><br><span class="line">	value_or.append(m)</span><br><span class="line">	v5 = v5 + <span class="number">1</span></span><br><span class="line"><span class="keyword">print</span> value_or</span><br><span class="line">base_flag = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(value_or)):</span><br><span class="line">	base_flag.append(value_or[i] ^ finall_str[i])</span><br><span class="line"><span class="keyword">print</span> base_flag</span><br><span class="line">base_str = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> base_flag:</span><br><span class="line">	base_str +=chr(i)</span><br><span class="line"><span class="keyword">print</span> base_str,len(base_str)</span><br></pre></td></tr></table></figure>
+<h4 id="sub-401160函数"><a href="#sub-401160函数" class="headerlink" title="sub_401160函数"></a>sub_401160函数</h4><hr>
+<p>这是一个变换了密码表的base64加密，基本原则是3*8 = 4*6即将3个8字节的字符，变成4个由6字节编码的字符。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver8.png" alt="sub_401160(v11)"></p>
+<p>这里每次取三个字符，在do-while循环中通过或和移位操作将三个字符保存到一个数中。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//new_driver10.png" alt=""></p>
+<p>这里的do-while循环中，每次将v3 右移，取6个字节(0x3f)，作为Byte_402138数组的下标（下表中存储的就是源字符），得到加密字符。解密时我们要先提取出byte_402138数组，根据上文得到的字符串解出下标值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">start_address = <span class="number">0x00402138</span></span><br><span class="line">end_address = <span class="number">0x00402179</span></span><br><span class="line">source_str = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(start_address,end_address):</span><br><span class="line">	source_str.append(Byte(i))</span><br><span class="line">flag_index = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> base_flag:</span><br><span class="line">	flag_index.append(source_str.index(i))</span><br><span class="line"><span class="keyword">print</span> flag_index,len(flag_index)</span><br><span class="line">flag_letter = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(flag_index)/<span class="number">4</span>):</span><br><span class="line">	num = <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">4</span>):</span><br><span class="line">		loca = i*<span class="number">4</span> + j</span><br><span class="line">		<span class="keyword">print</span> loca,i</span><br><span class="line">		num = num + (flag_index[loca] &lt;&lt; <span class="number">6</span>*(<span class="number">3</span>-j))</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">3</span>):</span><br><span class="line">		m = (num &gt;&gt; (<span class="number">2</span>-j) * <span class="number">8</span>)&amp;<span class="number">0xff</span></span><br><span class="line">		flag_letter.append(m)</span><br><span class="line"><span class="keyword">print</span> flag_letter</span><br></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">flag = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> flag_letter:</span><br><span class="line">	flag += chr(i)</span><br><span class="line"><span class="keyword">print</span> flag</span><br><span class="line"><span class="comment">#flag&#123;y0u_know_rc4_and_base64_ha$&#125;</span></span><br></pre></td></tr></table></figure>
+<p>在题目中依次调用了变种的base64以及rc4算法，在动态调试的时候，将Option Header中的DLL Characteristics该为0,可以实现IDA和OD中的地址分布一样。</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/12/06/安恒十月月赛re复现/">安恒十月月赛re复现</a>
+            
+            
+            <a class="next" rel="next" href="/2018/12/02/鹏城杯 reverse FLOW/">鹏城杯 reverse FLOW</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>湖南省第二届大学生网络安全技能赛 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#0x01-分析病毒邮箱的密码"><span class="toc-text">0x01 分析病毒邮箱的密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x02-分析邮箱"><span class="toc-text">0x02 分析邮箱</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x03-找到病毒收集的邮箱"><span class="toc-text">0x03 找到病毒收集的邮箱</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x06-exe逆向"><span class="toc-text">0x06 exe逆向</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">湖南省第二届大学生网络安全技能赛</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 30, 2019&nbsp;&nbsp;20:27:34</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Android/">Android</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <hr>
+<h4 id="0x01-分析病毒邮箱的密码"><a href="#0x01-分析病毒邮箱的密码" class="headerlink" title="0x01 分析病毒邮箱的密码"></a>0x01 分析病毒邮箱的密码</h4><p>拿到app,很久没玩过app的逆向了，其他人也没玩过，比赛的时候临时配置各种环境，还好，也还算能看懂题目。</p>
+<p>使用JEB逆向打开apk文件。看到在SMSINFO中V0.setPassword(SMSManager.pass)</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images/test1.PNG" alt=""></p>
+<p>跟入SMSmanager,可以看到SMSManager.pass = Base64.decode(NativeMethod.pass()),而在这里有System.loadLibrary(“core”)</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//test2.png" alt=""></p>
+<p>跟入NativeMethod,pass传入的是NativeMethod this</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//test3.PNG" alt=""></p>
+<p>导出libcore.so文件，通过IDA打开后，发现Java_info_NativeMethod_pass,跟入字符串通过base64解码后，得到邮箱密码。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//test4.PNG" alt=""></p>
+<h4 id="0x02-分析邮箱"><a href="#0x02-分析邮箱" class="headerlink" title="0x02 分析邮箱"></a>0x02 分析邮箱</h4><hr>
+<p>根据题目信息需要分析得到是邮箱，这个题目做出来也有凑巧的成分。使用JEB打开后看到SMSService，反编译后可以看到com.phone.db.a</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam2_1.PNG" alt=""></p>
+<p>跟入数据库后</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam2_2.PNG" alt=""></p>
+<p>我们可以看到数据库中的邮箱，提交即过。</p>
+<h4 id="0x03-找到病毒收集的邮箱"><a href="#0x03-找到病毒收集的邮箱" class="headerlink" title="0x03 找到病毒收集的邮箱"></a>0x03 找到病毒收集的邮箱</h4><hr>
+<p>使用JEB打开后，在itcast.a中，我们可以看到邮件发送失败，邮件发送成功，基本可以确定v0是发送的对象。v0是有D new生成的。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_1.PNG" alt=""></p>
+<p>跟入D 查看,可以在D中看到,new d(String arg1,String arg2)</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_2.PNG" alt=""></p>
+<p>在后面的pass验证中，我们可以基本断定arg1,arg2和账号和密码有关。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_3.PNG" alt=""></p>
+<p>跟入后我们可以看到,在载入core后，通过c.a设置了NativeMethod.m(),NativeMethod.m()</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_4.PNG" alt=""></p>
+<p>通过IDA打开libcore.so文件</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_5.PNG" alt=""></p>
+<p>查看C.a函数,将该函数放入Eclipse针对IDA中的字符串，处理即可得到收集的邮箱。</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam3_6.PNG" alt=""></p>
+<h4 id="0x06-exe逆向"><a href="#0x06-exe逆向" class="headerlink" title="0x06 exe逆向"></a>0x06 exe逆向</h4><hr>
+<p>使用IDA打开后，即可看到FLAG….然后题目分值给了500….</p>
+<p><img src="https://raw.githubusercontent.com/seanachao/seanachao.github.io/master/images//exam4_1.png" alt=""></p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2019/04/20/flask框架开发(精)/">flask开发</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
