@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>glibc 编译 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#glibc-编译"><span class="toc-text">glibc 编译</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#0x01-下载源码"><span class="toc-text">0x01 下载源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x02-指定安装与源码存放的位置"><span class="toc-text">0x02 指定安装与源码存放的位置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x03-新建build文件夹"><span class="toc-text">0x03 新建build文件夹</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x04修改加载-TODO：list1"><span class="toc-text">0x04修改加载#TODO：list1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#可选loader"><span class="toc-text">(可选loader)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注"><span class="toc-text">注</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#可参考"><span class="toc-text">可参考</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">glibc 编译</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 25, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/glibc/">glibc</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="glibc-编译"><a href="#glibc-编译" class="headerlink" title="glibc 编译"></a>glibc 编译</h3><hr>
+<h4 id="0x01-下载源码"><a href="#0x01-下载源码" class="headerlink" title="0x01 下载源码"></a>0x01 下载源码</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//ftp.gnu.org/gnu/glibc/</span></span><br></pre></td></tr></table></figure>
+<h4 id="0x02-指定安装与源码存放的位置"><a href="#0x02-指定安装与源码存放的位置" class="headerlink" title="0x02 指定安装与源码存放的位置"></a>0x02 指定安装与源码存放的位置</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 如安装在</span><br><span class="line">/usr/local/glibc/glibc2.23</span><br><span class="line"><span class="meta">#</span> 源码存放</span><br><span class="line">/home/thonsun/Desktop/glibc/glibc-2.23/</span><br></pre></td></tr></table></figure>
+<h4 id="0x03-新建build文件夹"><a href="#0x03-新建build文件夹" class="headerlink" title="0x03 新建build文件夹"></a>0x03 新建build文件夹</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 在下载源码的文件夹解压进入源码</span><br><span class="line">cd build文件夹</span><br><span class="line"><span class="meta">#</span>## x64的编译配置</span><br><span class="line">CFLAGS="-g -g3 -ggdb -gdwarf-4 -Og"</span><br><span class="line">CXXFLAGS="-g -g3 -ggdb -gdwarf-4 -Og"</span><br><span class="line">../configure --prefix=/path/to/install</span><br><span class="line"><span class="meta">#</span> ../configure --prefix=/usr/local/glibc/glibc2.23 我的配置</span><br><span class="line">mkdir build # 要在新的空的文件夹进行configure配置，存放makefile文件</span><br><span class="line"><span class="meta">#</span> configure编译时提示：configure: error: you must configure in a separate build directory</span><br><span class="line"><span class="meta">#</span>## x32的编译配置</span><br><span class="line"><span class="meta">#</span> 在前面的已经生成64位的情况下，再同保留两个版本的要新建一个build32/,和安装文件夹x32/</span><br><span class="line"><span class="meta">#</span> /usr/local/glibc/glibc2.23/x32</span><br><span class="line"><span class="meta">#</span> /home/thonsun/Desktop/glibc/glibc-2.23/bulid32</span><br><span class="line"><span class="meta">#</span>##!!!!! 32位下的编译要一起执行 !!!!</span><br><span class="line">CC="gcc -m32" CXX="g++ -m32" \</span><br><span class="line">CFLAGS="-g -g3 -ggdb -gdwarf-4 -Og -Wno-error" \</span><br><span class="line">CXXFLAGS="-g -g3 -ggdb -gdwarf-4 -Og" \</span><br><span class="line">../configure --prefix=/usr/local/glibc/glibc2.23/x32 --host=i686-linux-gnu</span><br><span class="line"><span class="meta">#</span>### 切换到root</span><br><span class="line">su</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h4 id="0x04修改加载-TODO：list1"><a href="#0x04修改加载-TODO：list1" class="headerlink" title="0x04修改加载#TODO：list1"></a>0x04修改加载#TODO：list1</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">export LD_LIBRARY_PATH=/usr/local/glibc2121/xxx </span><br><span class="line"></span><br><span class="line">export LD_LIBRARY_PATH=`pwd`</span><br><span class="line">export LD_PRELOAD=你的libc</span><br><span class="line"></span><br><span class="line">最后不用了在：unset LD_PRELOAD</span><br></pre></td></tr></table></figure>
+<h4 id="可选loader"><a href="#可选loader" class="headerlink" title="(可选loader)"></a>(可选loader)</h4><hr>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> ubuntu16.04的更新源</span><br><span class="line">https://blog.csdn.net/lym152898/article/details/79100507</span><br><span class="line"><span class="meta">#</span> 安装pathelf</span><br><span class="line">sudo apt-get install patchelf</span><br><span class="line"><span class="meta">#</span> pathelf使用 https://nixos.org/patchelf.html</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 修改要调试的程序</span><br><span class="line"><span class="meta">#</span> x64</span><br><span class="line">patchelf --set-interpreter /usr/local/glibc/glibc2.23/lib/ld-linux-x86-64.so.2 --set-rpath /usr/local/glibc/glibc2.23/lib/ double_free</span><br><span class="line"><span class="meta">#</span> x32 </span><br><span class="line">patchelf --set-interpreter /usr/local/glibc/glibc2.23/x32/lib/ld-linux.so.2 --set-rpath /usr/local/glibc/glibc2.23/x32/lib/ double_free32</span><br><span class="line"><span class="meta">#</span> 注：ld-linux-x86-64.so.2为一个编译生成的lib库中的loader的ld-so.2的连接文件，会默认加载当前的libc</span><br></pre></td></tr></table></figure>
+<h3 id="注"><a href="#注" class="headerlink" title="注"></a>注</h3><p>文章主要copy 博主文章，仅用作 参考学习,记录!!!</p>
+<p> <a href="https://thonsun.github.io/2019/07/15/自选择glibc带符号版本调试/" target="_blank" rel="noopener">https://thonsun.github.io/2019/07/15/%E8%87%AA%E9%80%89%E6%8B%A9glibc%E5%B8%A6%E7%AC%A6%E5%8F%B7%E7%89%88%E6%9C%AC%E8%B0%83%E8%AF%95/</a> </p>
+<h4 id="可参考"><a href="#可参考" class="headerlink" title="可参考"></a>可参考</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http://look3little.blogspot.com/2017/12/debug-symbolglibc.html</span><br><span class="line">https://bbs.pediy.com/thread-225849.htm</span><br><span class="line">http://brieflyx.me/2018/linux-tools/handling-so-hell/</span><br><span class="line">https://www.cnblogs.com/xingzherufeng/p/9682660.html</span><br></pre></td></tr></table></figure>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/c/"># c</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2019/07/03/python日志/"></a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
