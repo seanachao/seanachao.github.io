@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>文本替换 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文本替换"><span class="toc-text">文本替换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#sed-日记"><span class="toc-text">sed 日记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">文本替换</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 19, 2020&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/command/">command</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h2 id="文本替换"><a href="#文本替换" class="headerlink" title="文本替换"></a>文本替换</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grep -zrolE 'cpu' # 通过-z可以匹配多行，通过-E可以匹配正则</span><br><span class="line">sed  '/requests:/&#123;N;N;/requests:\n *memory/d&#125;' org1-cli.tpl.bak &gt; orgbak #grep通过N可以匹配到下一行的内容到模式空间</span><br><span class="line"><span class="meta">#</span>上面的命令解读</span><br><span class="line">首先 /requests 来匹配每一行，匹配到后，将其后三行读入模式空间，读入后一行一行继续匹配</span><br></pre></td></tr></table></figure>
+<h3 id="sed-日记"><a href="#sed-日记" class="headerlink" title="sed 日记"></a>sed 日记</h3><hr>
+<p>由于项目的测试机器不能很好的满足k8s的requests资源要求，所以要将模板文件中的requests请求项注释掉，但是requests不仅仅有对CPU，memory的需求，也有对pv的要求，要注释的仅仅是CPU以及memory部分。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">      requests:</span><br><span class="line">        storage: 10Mi</span><br><span class="line">....</span><br><span class="line">...</span><br><span class="line">      containers:</span><br><span class="line">        - name: cli</span><br><span class="line">          image:  </span><br><span class="line">          resources:</span><br><span class="line">            requests:</span><br><span class="line">              memory: "0.2Gi"</span><br><span class="line">              cpu: "0.2"</span><br></pre></td></tr></table></figure>
+<p>需求是只注释如下三行,也即删除这三行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">requests:</span><br><span class="line">  memory: &quot;0.2Gi&quot;</span><br><span class="line">  cpu: &quot;0.2&quot;</span><br></pre></td></tr></table></figure>
+<p>可以使用如下的替换命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed  '/requests/&#123;N;N;s/requests:\n *memory: ".\+"/###/&#125;' org1-cli.tpl &gt;orgbak</span><br></pre></td></tr></table></figure>
+<p>由于要替换多个文件所以可以结合grep选择出要替换的文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed  '/requests/&#123;N;N;s/requests:\n *memory: ".\+"/###/&#125;' `grep -rl cpu`</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
+<p>sed的命令也相当于一行的程序，sed对文本的处理是按照行来的，一行一行的处理，当/requests的时候，会匹配到有requests的行，此时模式空间中是带有 requests的 文本行，然后 N; N;会依次读入下一行，下一行到当前的模式空间中，然后之后的/s的匹配是针对现在的模式空间来匹配的，当通过 N; N;依次读入下一行，下下行的内容的时候，字符串之间是通过\n来链接的。比如对原文本，当通过N; N；读入后，模式空间中的内容将如下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requests: \n             memory: "0.2Gi"\n        cpu: "0.2"</span><br></pre></td></tr></table></figure>
+<p>后续的s/requests:\n *memory: “.+“/###/的匹配替换将是针对以上模式空间的内容来进行匹配的</p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/linux/"># linux</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2019/11/25/glibc_debug 编译/">glibc 编译</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>

@@ -299,7 +299,7 @@
 <p><td>OF, SF, ZF, AF, CF, PF</td></p>
 <p><td>根据两个操作数的差结果来设置条件码（请注意，AT&amp;T语法是第二个减第一个，Intel语法是第一个减第二个）。</td><br><br><br></p>
 <h4 id="调试器相关"><a href="#调试器相关" class="headerlink" title="调试器相关"></a>调试器相关</h4><hr>
-<p>对齐OD和IDA反汇编的地址<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">修改的是rebase base address</span></span><br><span class="line">new_start_address=OD_start_address-(IDA_start_address-IDA_base_address)</span><br></pre></td></tr></table></figure></p>
+<p>对齐OD和IDA反汇编的地址<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>修改的是rebase base address</span><br><span class="line">new_start_address=OD_start_address-(IDA_start_address-IDA_base_address)</span><br></pre></td></tr></table></figure></p>
 <h3 id="正向逆向结合"><a href="#正向逆向结合" class="headerlink" title="正向逆向结合"></a>正向逆向结合</h3><p>!a.empty() ==&gt; a.empty()^1</p>
 <h3 id="IDA学习"><a href="#IDA学习" class="headerlink" title="IDA学习"></a>IDA学习</h3><hr>
 <p>IDA视图显示汇编地址<br><a href="https://www.cnblogs.com/17bdw/p/7097465.html" target="_blank" rel="noopener">https://www.cnblogs.com/17bdw/p/7097465.html</a></p>
