@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>glibc 编译 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#IDA的动态调试脚本"><span class="toc-text">IDA的动态调试脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">glibc 编译</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 10, 2020&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="IDA的动态调试脚本"><a href="#IDA的动态调试脚本" class="headerlink" title="IDA的动态调试脚本"></a>IDA的动态调试脚本</h3><p>IDA使用IDC脚本进行动态调试，主要用到的函数有StartDebugger、GetDebuggerEvent、RunTo、GetRegValue</p>
+<p>StartDebugger(“”,””,””)的三个参数主要是被调试的可执行文件路径、命令行参数、进程的初始化目录，调试过程主要使用的是参数2设置命令行参数</p>
+<p>需要注意的是在调用StartDebugger、Runto的时候</p>
+<p><strong>在调用此函数之后你必须调用GetDebuggerEvent()函数，以便知道发生了什么事件</strong></p>
+<p>之后可以采用GetRegValue、SetRegValue来获取以及设置相关的寄存器的值</p>
+<p><strong>IDC example </strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;idc.idc&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">auto</span> max_eax,max_ebx,second_ebx,third_eax;</span><br><span class="line">	<span class="keyword">auto</span> eax,ebx;</span><br><span class="line">	max_eax = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">//AddBpt(0x0000000008048A8C);</span></span><br><span class="line">	<span class="comment">//AddBpt(0x8048710);</span></span><br><span class="line">	StartDebugger(<span class="string">""</span>,<span class="string">"&lt; input"</span>,<span class="string">""</span>);</span><br><span class="line">	<span class="keyword">auto</span> code = GetDebuggerEvent(WFNE_SUSP,<span class="number">-1</span>);</span><br><span class="line">	<span class="keyword">auto</span> i;</span><br><span class="line">	<span class="keyword">for</span>(i =<span class="number">0</span>; i &lt; <span class="number">1</span>;i++)&#123;</span><br><span class="line">			RunTo(<span class="number">0x0000000008048710</span>);</span><br><span class="line">			code = GetDebuggerEvent(WFNE_SUSP,<span class="number">-1</span>);</span><br><span class="line">			eax = GetRegValue(<span class="string">"RAX"</span>);</span><br><span class="line">			ebx = GetRegValue(<span class="string">"RBX"</span>);</span><br><span class="line">			Message(<span class="string">"rax %x"</span>,eax);</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>IDA python example2</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> idaapi</span><br><span class="line"><span class="keyword">import</span> idc</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">256</span>):</span><br><span class="line"></span><br><span class="line">    RunTo(<span class="number">0x080485b1</span>)</span><br><span class="line">    GetDebuggerEvent(WFNE_SUSP, <span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">print</span> i</span><br><span class="line">    SetRegValue(i, <span class="string">"eax"</span>)</span><br><span class="line"></span><br><span class="line">    RunTo(<span class="number">0x08048704</span>)</span><br><span class="line">    GetDebuggerEvent(WFNE_SUSP, <span class="number">-1</span>)</span><br><span class="line">    bool = GetRegValue(<span class="string">"eax"</span>)</span><br><span class="line"></span><br><span class="line">    RunTo(<span class="number">0x08048746</span>)</span><br><span class="line">    GetDebuggerEvent(WFNE_SUSP, <span class="number">-1</span>)</span><br><span class="line">    SetRegValue(<span class="number">0x080486D4</span>, <span class="string">'eip'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> bool  == <span class="number">0x95</span>:</span><br><span class="line">        <span class="keyword">print</span> i</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">RunTo(<span class="number">0x080485b1</span>)</span><br><span class="line">GetDebuggerEvent(WFNE_SUSP, <span class="number">-1</span>)</span><br><span class="line"><span class="keyword">print</span> i</span><br><span class="line">SetRegValue(i, <span class="string">"eax"</span>)</span><br><span class="line"></span><br><span class="line">RunTo(<span class="number">0x08048704</span>)</span><br><span class="line">GetDebuggerEvent(WFNE_SUSP, <span class="number">-1</span>)</span><br><span class="line">stack = GetRegValue(<span class="string">"esp"</span>)</span><br><span class="line"></span><br><span class="line">arr_addr = stack + <span class="number">0x1c</span></span><br><span class="line">arr = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0xff</span>):</span><br><span class="line">    arr.append(Byte(arr_addr + i))</span><br><span class="line"></span><br><span class="line">s = <span class="string">'95eeaf95ef94234999582f722f492f72b19a7aaf72e6e776b57aee722fe77ab5ad9aaeb156729676ae7a236d99b1df4a'</span></span><br><span class="line">a = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(s), <span class="number">2</span>):</span><br><span class="line">    a.append(arr.index(int(s[i:i+<span class="number">2</span>], <span class="number">16</span>)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">''</span>.join(map(chr, a))</span><br></pre></td></tr></table></figure>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>* <a href="https://www.codenong.com/cs105359705/" target="_blank" rel="noopener">https://www.codenong.com/cs105359705/</a></p>
+<p>* IDA Pro 帮助手册</p>
+<p>* <a href="https://introspelliam.github.io/2017/09/18/tools/IDA%E7%9A%84%E8%B0%83%E8%AF%95%E8%84%9A%E6%9C%ACidc/" target="_blank" rel="noopener">https://introspelliam.github.io/2017/09/18/tools/IDA%E7%9A%84%E8%B0%83%E8%AF%95%E8%84%9A%E6%9C%ACidc/</a></p>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/03/19/文本替换/">文本替换</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
