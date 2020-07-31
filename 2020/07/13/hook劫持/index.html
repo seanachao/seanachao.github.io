@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>_\_malloc_hook以及\_\_free\_hook劫持原理 | S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-hook以及-free-hook劫持原理"><span class="toc-text">__malloc_hook以及__free_hook劫持原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc-hook以及-free-hoook的作用"><span class="toc-text">__malloc_hook以及__free_hoook的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#劫持原理"><span class="toc-text">劫持原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#malloc-hook"><span class="toc-text">malloc_hook</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#free-hook"><span class="toc-text">free_hook</span></a></li></ol></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">_\_malloc_hook以及\_\_free\_hook劫持原理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">July 13, 2020&nbsp;&nbsp;00:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/二进制/">二进制</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h2 id="malloc-hook以及-free-hook劫持原理"><a href="#malloc-hook以及-free-hook劫持原理" class="headerlink" title="__malloc_hook以及__free_hook劫持原理"></a>__malloc_hook以及__free_hook劫持原理</h2><h3 id="malloc-hook以及-free-hoook的作用"><a href="#malloc-hook以及-free-hoook的作用" class="headerlink" title="__malloc_hook以及__free_hoook的作用"></a>__malloc_hook以及__free_hoook的作用</h3><ul>
+<li><p>The GNU C library lets you modify the behavior of malloc(3), realloc(3), and free(3) by specifying appropriate hook functions. You can use these hooks to help you debug programs that use dynamic memory allocation, for example.  from <a href="https://linux.die.net/man/3/malloc_hook" target="_blank" rel="noopener">die.net</a></p>
+</li>
+<li><p>在调用malloc或者free的时候，如果 malloc_hook 和free_hook的值存在，则会调用malloc_hook或者free_hook指向的地址，假设在使用one_gadget的时候满足one_gadget的调用条件，当overwrite malloc_hook和free_hook的时候，便可以getshell，执行malloc的时候，其参数是size大小，所以overwrite malloc_hook的时候使用one_gadget的地址可以getshell。执行free的时候，可以将__free_hook的值overwrite为system的地址，通过释放(/bin/sh\x00)的chunk，可以达到system(/bin/sh)来getshell</p>
+</li>
+</ul>
+<h3 id="劫持原理"><a href="#劫持原理" class="headerlink" title="劫持原理"></a>劫持原理</h3><ul>
+<li><p>malloc_hook位于main_arena上方-0x10的位置，可以通过fake chunk来overwrite该值实现getshell</p>
+</li>
+<li><p>free_hook 位于libc上_free_hook上，可以通过fake chunk来overwrite该值达到劫持程序流的目的</p>
+</li>
+</ul>
+<h4 id="malloc-hook"><a href="#malloc-hook" class="headerlink" title="malloc_hook"></a>malloc_hook</h4><ul>
+<li>malloc_hook的调用</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">2907</span>   <span class="keyword">void</span> *(*hook) (<span class="keyword">size_t</span>, <span class="keyword">const</span> <span class="keyword">void</span> *)</span><br><span class="line">► <span class="number">2908</span>     = atomic_forced_read (__malloc_hook);</span><br><span class="line">  <span class="number">2909</span>   <span class="keyword">if</span> (__builtin_expect (hook != <span class="literal">NULL</span>, <span class="number">0</span>))</span><br><span class="line">  <span class="number">2910</span>     <span class="keyword">return</span> (*hook)(bytes, RETURN_ADDRESS (<span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对应的汇编代码为</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">.text:00000000000730AE                 push    rbp             ; Alternative name is &apos;__libc_malloc&apos;</span><br><span class="line">.text:00000000000730AF                 push    rbx</span><br><span class="line">.text:00000000000730B0                 sub     rsp, 8</span><br><span class="line">.text:00000000000730B4                 mov     rbp, rdi</span><br><span class="line">.text:00000000000730B7                 mov     rax, cs:__malloc_hook_ptr #取malloc_hook的位置</span><br><span class="line">.text:00000000000730BE                 mov     rax, [rax] #取malloc_hook的值</span><br><span class="line">.text:00000000000730C1                 test    rax, rax</span><br><span class="line">.text:00000000000730C4                 jz      short loc_730D2</span><br><span class="line">.text:00000000000730C6                 mov     rsi, [rsp+18h]</span><br><span class="line">.text:00000000000730CB                 call    rax</span><br><span class="line">malloc_hook的存储地址</span><br><span class="line">.got:0000000000388EF8 __malloc_hook_ptr dq offset __malloc_hook</span><br><span class="line">malloc_hook的存储位置</span><br><span class="line">.data:0000000000389B10 __malloc_hook   dq offset malloc_hook_ini</span><br><span class="line">.data:0000000000389B10                                         ; DATA XREF: LOAD:000000000000A380↑o</span><br><span class="line">.data:0000000000389B10                                         ; .got:__malloc_hook_ptr↑o</span><br><span class="line">.data:0000000000389B18                 align 20h</span><br><span class="line">.data:0000000000389B20 ; malloc_state main_arena</span><br><span class="line">.data:0000000000389B20 main_arena      malloc_state &lt;0, 0, 0, 0, 0, 0, 0, offset main_arena, 0, 1, 0, 0&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>利用思路：在执行malloc时，会检测__malloc_hook的值，如果malloc_hook的值存在，将调用malloc_hook指向的地址call rax，如果我们将该值overite 为one_gadget，当程序执行malloc的时候，便可以getshell</p>
+</li>
+<li><p>实际利用过程</p>
+<ul>
+<li>malloc_hook的存储的位置</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ p &amp;__malloc_hook</span><br><span class="line">$<span class="number">2</span> = (<span class="keyword">void</span> *(**)(<span class="keyword">size_t</span>, <span class="keyword">const</span> <span class="keyword">void</span> *)) <span class="number">0x7ffff7dd5b10</span> &lt;__malloc_hook&gt;</span><br><span class="line">gdb-peda$ p &amp;main_arena</span><br><span class="line">$<span class="number">3</span> = (struct malloc_state *) <span class="number">0x7ffff7dd5b20</span> &lt;main_arena&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在malloc_hook 上方查找满足条件的fastbin 的size</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ x/<span class="number">8</span>gx  <span class="number">0x7ffff7dd5b00</span><span class="number">-0x20</span></span><br><span class="line"><span class="number">0x7ffff7dd5ae0</span> &lt;_IO_wide_data_0+<span class="number">288</span>&gt;:	<span class="number">0x0000000000000000</span>	<span class="number">0x0000000000000000</span></span><br><span class="line"><span class="number">0x7ffff7dd5af0</span> &lt;_IO_wide_data_0+<span class="number">304</span>&gt;:	<span class="number">0x00007ffff7dd4260</span>	<span class="number">0x0000000000000000</span></span><br><span class="line"><span class="number">0x7ffff7dd5b00</span> &lt;__memalign_hook&gt;:	<span class="number">0x00007ffff7ac0305</span>	<span class="number">0x00007ffff7ac02c6</span></span><br><span class="line"><span class="number">0x7ffff7dd5b10</span> &lt;__malloc_hook&gt;:	<span class="number">0x0000000000000000</span>	<span class="number">0x0000000000000000</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>查找符合条件的fake_fastbin,pwndbg内置了查找符合条件的fake_fast_bin的命令</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ find_fake_fast <span class="number">0x7ffff7dd5b10</span> <span class="number">0x7f</span></span><br><span class="line">FAKE CHUNKS</span><br><span class="line">Fake chunk | Allocated chunk | PREV_INUSE | IS_MMAPED | NON_MAIN_ARENA</span><br><span class="line">Addr: <span class="number">0x7ffff7dd5aed</span></span><br><span class="line">prev_size: <span class="number">0xfff7ac02c600007f</span></span><br><span class="line">size: <span class="number">0x7f</span></span><br><span class="line">fd: <span class="number">0x00</span></span><br><span class="line">bk: <span class="number">0x7f</span></span><br><span class="line">fd_nextsize: <span class="number">0xfff7ac0305000000</span></span><br><span class="line">bk_nextsize: <span class="number">0xfff7dd4260000000</span></span><br></pre></td></tr></table></figure>
+<p>伪造的fastbin的addr为0x7ffff7dd5aed，当程序可以在该位置申请chunk的时候，便可以达到程序流劫持getshell</p>
+<h4 id="free-hook"><a href="#free-hook" class="headerlink" title="free_hook"></a>free_hook</h4><ul>
+<li>free_hook的调用</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">2939</span>   <span class="keyword">void</span> (*hook) (<span class="keyword">void</span> *, <span class="keyword">const</span> <span class="keyword">void</span> *)</span><br><span class="line">► <span class="number">2940</span>     = atomic_forced_read (__free_hook);</span><br><span class="line">  <span class="number">2941</span>   <span class="keyword">if</span> (__builtin_expect (hook != <span class="literal">NULL</span>, <span class="number">0</span>))</span><br><span class="line">  <span class="number">2942</span>     &#123;</span><br><span class="line">  <span class="number">2943</span>       (*hook)(mem, RETURN_ADDRESS (<span class="number">0</span>));</span><br><span class="line">  <span class="number">2944</span>       <span class="keyword">return</span>;</span><br><span class="line">  <span class="number">2945</span>     &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对应的汇编代码为</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">汇编代码</span><br><span class="line">.text:00000000000736F4                 sub     rsp, 8          ; Alternative name is 'cfree'</span><br><span class="line">.text:<span class="number">00000000000736F</span>8                 mov     rax, cs:__free_hook_ptr</span><br><span class="line">.text:<span class="number">00000000000736F</span>F                 mov     rax, [rax]</span><br><span class="line">.text:<span class="number">0000000000073702</span>                 test    rax, rax</span><br><span class="line">.text:<span class="number">0000000000073705</span>                 jz      <span class="keyword">short</span> loc_73710</span><br><span class="line">.text:<span class="number">0000000000073707</span>                 mov     rsi, [rsp+<span class="number">8</span>]</span><br><span class="line">.text:<span class="number">000000000007370</span>C                 call    rax</span><br><span class="line">free_hook 的存储地址</span><br><span class="line">.got:<span class="number">0000000000388F</span>00 __free_hook_ptr dq offset __free_hook   ; DATA XREF: ptmalloc_lock_all+EA↑r</span><br><span class="line">free_hook 的存储位置</span><br><span class="line">.bss:<span class="number">000000000038B</span>7A8 __free_hook     dq ?                    ; DATA XREF: LOAD:<span class="number">0000000000005190</span>↑o</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>利用思路：</p>
+<ul>
+<li>通过改写main_arena中的top_chunk的地址，将top_chunk的值改写到<strong>free_hook上方指定的位置，通过不断向top_chunk申请chunk，最终可以分配到包含</strong>free_hook的区块，从而可以改写__free_hook的值。</li>
+<li>通过改写global_max_fast的值，可以在free_hook的上方找到一个足够大包含free_hook的块，当改写了global_max_fast后，向heap申请的块都将按照fastbin来处理</li>
+<li>通过unsorted bin attack 在free_hook上方<strong>伪造 0x7f大小的chunk</strong>,再通过fastbin attack 来修改free_hoook的值</li>
+</ul>
+</li>
+<li><p>实际利用过程</p>
+<ul>
+<li><p>修改top_chunk</p>
+<ul>
+<li><p>free_hook的存储的位置,在 free_hook上方 -0xb58 我们可以找到满足top_chunk要求的大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ p &amp;__free_hook</span><br><span class="line">$5 = (void (**)(void *, const void *)) 0x7ffff7dd77a8 &lt;__free_hook&gt;</span><br><span class="line">gdb-peda$ x/8gx 0x7ffff7dd77a8 -0xb58</span><br><span class="line">0x7ffff7dd6c50 &lt;initial+16&gt;:	0x0000000000000004	0x697b5349788728d7</span><br><span class="line">0x7ffff7dd6c60 &lt;initial+32&gt;:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x7ffff7dd6c70 &lt;initial+48&gt;:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>伪造的fastbin的addr为0x7ffff7dd6c50，当程序可以在该位置申请chunk的时候，通过重复向top_chunk申请，最终覆写__free_hook的值为system的值通过free /bin/sh\x00的chunk,达到程序流劫持getshell。</p>
+</li>
+</ul>
+</li>
+<li><p>修改global_max_fast,但是这依赖于可以malloc的chunk的大小是可控的</p>
+<ul>
+<li><p>通过fastbin attack 使得可以malloc 指定包含free_hook大小的chunk，比如利用0x7ffff7dd6c58处的值，但是这里要合理去构造偏移</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ x/200gx 0x7ffff7dd77a8-0xC00</span><br><span class="line">0x7ffff7dd6ba8 &lt;lock+8&gt;:	0x0000000000000000	0x0000000000000000</span><br><span class="line">....</span><br><span class="line">0x7ffff7dd6c48 &lt;initial+8&gt;:	0x0000000000000001	0x0000000000000004</span><br><span class="line">0x7ffff7dd6c58 &lt;initial+24&gt;:	0xbf378114d045c300	0x0000000000000000</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>通过unsorted_bin attack 来写入free_hook上方0x7f的值，可以在free_hook上方伪造出0x7f大小的chunk,再可以通过fastbin attack 来malloc得到包含free_hook的chunk，写入system的地址，通过free(/bin/sh)来实现利用。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CTF/"># CTF</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/06/23/ret2dl_resolve/">re2dl_resolve</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
