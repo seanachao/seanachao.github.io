@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>S3cana&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">S3cana&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">S3cana&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/aboutme">Aboutme</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div id="post-toc" class="post-toc">
+            <span class="post-toc-title">catalogue</span>
+            <div class="post-toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一次debug分析"><span class="toc-text">一次debug分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#背景描述："><span class="toc-text">背景描述：</span></a></li></ol></li></ol>
+            </div>
+        </div>
+    
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title"></h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">S3cana</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 13, 2021&nbsp;&nbsp;23:13:42</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <section class="post-content">
+            <h3 id="一次debug分析"><a href="#一次debug分析" class="headerlink" title="一次debug分析"></a>一次debug分析</h3><h4 id="背景描述："><a href="#背景描述：" class="headerlink" title="背景描述："></a>背景描述：</h4><p>实现LRU算法，在实现的过程中，遇到的输出如下,最开始的一部分输入是正常的，后来链表被破坏，长度依次减少了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">get 3 0</span><br><span class="line"> -1 -1 -1  2  1  5  4  9 10  6  3</span><br><span class="line"> -1 -1 -1 19 30  5 30  3 25 14  1</span><br><span class="line">put 10 11</span><br><span class="line"> -1 -1 -1  2  1  5  4  9 10</span><br><span class="line"> -1 -1 -1 19 30  5 30  3 11</span><br><span class="line">get 8 0</span><br><span class="line"> -1 -1 -1  2  1  5  4  9 10</span><br><span class="line"> -1 -1 -1 19 30  5 30  3 11</span><br><span class="line">get 5 0</span><br><span class="line"> -1 13 11  2  3 12  9  6  5</span><br><span class="line"> -1 17 15 15 16 17  1 19 18</span><br><span class="line">get 5 0</span><br><span class="line"> -1 13 11  2  3 12  9  6  5</span><br><span class="line"> -1 17 15 15 16 17  1 19 18</span><br><span class="line">put 8 1</span><br><span class="line"> -1 11  2  3 12  9  6  5  8</span><br><span class="line"> -1 15 15 16 17  1 19 18  1</span><br><span class="line">put 11 7</span><br><span class="line"> -1  2  3 12  9  6  5  8 11</span><br><span class="line"> -1 15 16 17  1 19 18  1  7</span><br><span class="line">put 5 2</span><br><span class="line"> -1  2  3 12  9  6  5</span><br><span class="line"> -1 15 16 17  1 19  2</span><br><span class="line">put 9 28</span><br><span class="line"> -1  2  3 12  6  5  9</span><br><span class="line"> -1 15 16 17 19  2 28</span><br><span class="line">get 1 0</span><br><span class="line"> -1  2  3 12  6  5  9</span><br><span class="line"> -1 15 16 17 19  2 28</span><br><span class="line">put 2 2</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在仔细分析输出的数据，每次都是在put 时候，出现问题，但是之前的多次put是没有问题的,只有再分析get了</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">get_Node</span><span class="params">(Node*ptr,<span class="keyword">int</span> key)</span></span>&#123;</span><br><span class="line">    Node* head = ptr;</span><br><span class="line">    Node* record = <span class="literal">NULL</span>;</span><br><span class="line">    ptr = ptr-&gt;next;</span><br><span class="line">    <span class="keyword">while</span>(ptr)&#123;</span><br><span class="line">        <span class="keyword">if</span>(ptr-&gt;key == key)&#123;</span><br><span class="line">            record = ptr;</span><br><span class="line">            <span class="keyword">if</span>(ptr-&gt;next != <span class="literal">NULL</span>)&#123;</span><br><span class="line">                ptr-&gt;next-&gt;pre = ptr-&gt;pre;</span><br><span class="line">                ptr-&gt;pre-&gt;next = ptr-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(ptr-&gt;next == <span class="literal">NULL</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(record!=<span class="literal">NULL</span>)&#123;</span><br><span class="line">                <span class="comment">//if(ptr-&gt;next==NULL) return record-&gt;val;</span></span><br><span class="line">                ptr-&gt;next = record;</span><br><span class="line">                <span class="comment">//bug 点 它的上一个指向了他自身，破坏了双向链表</span></span><br><span class="line">                record-&gt;pre = ptr;</span><br><span class="line">                record-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">                <span class="keyword">return</span> record-&gt;val;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ptr = ptr-&gt;next;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </section>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/07/13/hook劫持/">malloc_hook以及free_hook劫持原理</a>
+            
+        </section>
+
+
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© S3cana | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Sirice19/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+    </div>
+</body>
+</html>
